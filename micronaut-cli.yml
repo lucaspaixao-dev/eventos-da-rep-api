@@ -1,0 +1,6 @@
+applicationType: default
+defaultPackage: io.github.xuenqui
+testFramework: junit
+sourceLanguage: kotlin
+buildTool: gradle_kotlin
+features: [ annotation-api, app-name, data, data-mongodb, gradle, http-client, jackson-databind, junit, kotlin, kotlin-application, kotlin-build, kotlin-extension-functions, log4j2, micronaut-build, netty-server, readme, shade, testcontainers, yaml ]

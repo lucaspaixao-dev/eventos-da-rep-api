@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 1234
+      MONGO_INITDB_DATABASE: eventos_da_rep
+    ports:
+      - "27017:27017"
+#    volumes:
+#      - ./resources/db.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+#    command: [ "--bind_ip_all" ]
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
