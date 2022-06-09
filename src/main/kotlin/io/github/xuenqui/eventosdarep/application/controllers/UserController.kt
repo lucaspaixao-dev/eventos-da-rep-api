@@ -42,4 +42,22 @@ class UserController(
     ): User? {
         return userService.findByEmail(email)
     }
+
+    @Put("/{userId}/events/{eventId}/join")
+    suspend fun join(
+        @PathVariable("userId") userId: String,
+        @PathVariable("eventId") eventId: String
+    ): HttpResponse<Nothing> {
+        userService.join(userId, eventId)
+        return HttpResponse.noContent()
+    }
+
+    @Put("/{userId}/events/{eventId}/cancel")
+    suspend fun cancel(
+        @PathVariable("userId") userId: String,
+        @PathVariable("eventId") eventId: String
+    ): HttpResponse<Nothing> {
+        userService.cancel(userId, eventId)
+        return HttpResponse.noContent()
+    }
 }

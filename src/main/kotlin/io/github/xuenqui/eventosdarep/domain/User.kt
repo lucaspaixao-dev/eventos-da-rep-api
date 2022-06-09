@@ -9,20 +9,21 @@ data class User(
     var email: String = "",
     var authenticationId: String = "",
     var isAdmin: Boolean = false,
-    var events: MutableList<Event> = mutableListOf(),
+    var photo: String = "",
+    var events: MutableList<String> = mutableListOf(),
     var createdAt: LocalDateTime? = LocalDateTime.now(),
     var updatedAt: LocalDateTime? = null
 ) {
 
-    fun confirm(event: Event) {
-        if (!events.contains(event)) {
-            events.add(event)
+    fun confirm(eventId: String) {
+        if (!events.contains(eventId)) {
+            events.add(eventId)
         }
     }
 
-    fun remove(event: Event) {
-        if (events.contains(event)) {
-            events.remove(event)
+    fun remove(eventId: String) {
+        if (events.contains(eventId)) {
+            events.remove(eventId)
         }
     }
 }

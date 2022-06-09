@@ -1,27 +1,35 @@
 package io.github.xuenqui.eventosdarep.domain.services
 
-import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.repository.UserRepository
 import jakarta.inject.Singleton
 
 @Singleton
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val eventService: EventService
 ) {
 
-    suspend fun create(user: User): String {
-        userRepository.save(user)
-        return user.id!!
-    }
+    suspend fun create(user: User): String =
+        userRepository.findByEmail(user.email)?.id ?: userRepository.save(user)
 
-    suspend fun confirmation(event: Event, user: User) {
-        user.confirm(event)
+    suspend fun join(userId: String, eventId: String) {
+        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+        val event = eventService.findById(eventId) ?: throw IllegalArgumentException("Event not found")
+
+        event.confirm(userId)
+        user.confirm(eventId)
+        eventService.update(event)
         userRepository.update(user)
     }
 
-    suspend fun giveUp(event: Event, user: User) {
-        user.remove(event)
+    suspend fun cancel(userId: String, eventId: String) {
+        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+        val event = eventService.findById(eventId) ?: throw IllegalArgumentException("Event not found")
+
+        event.giveUp(userId)
+        user.remove(eventId)
+        eventService.update(event)
         userRepository.update(user)
     }
 

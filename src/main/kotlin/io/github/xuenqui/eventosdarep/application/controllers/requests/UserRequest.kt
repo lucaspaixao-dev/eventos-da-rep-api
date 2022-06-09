@@ -8,6 +8,7 @@ data class UserRequest(
     val email: String,
     val authenticationId: String,
     val isAdmin: Boolean = false,
+    val photo: String = "",
 )
 
 fun UserRequest.toDomain(id: String? = null, updatedAt: LocalDateTime? = null) = User(
@@ -16,5 +17,6 @@ fun UserRequest.toDomain(id: String? = null, updatedAt: LocalDateTime? = null) =
     email = email,
     authenticationId = authenticationId,
     isAdmin = isAdmin,
+    photo = photo,
     updatedAt = updatedAt
 )
