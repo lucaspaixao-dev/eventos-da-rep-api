@@ -12,7 +12,8 @@ data class User(
     var photo: String = "",
     var events: MutableList<String> = mutableListOf(),
     var createdAt: LocalDateTime? = LocalDateTime.now(),
-    var updatedAt: LocalDateTime? = null
+    var updatedAt: LocalDateTime? = null,
+    var device: Device? = null
 ) {
 
     fun confirm(eventId: String) {

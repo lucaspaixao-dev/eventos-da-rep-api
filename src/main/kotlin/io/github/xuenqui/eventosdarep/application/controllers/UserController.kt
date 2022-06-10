@@ -1,5 +1,7 @@
 package io.github.xuenqui.eventosdarep.application.controllers
 
+import io.github.xuenqui.eventosdarep.application.controllers.requests.CreateNotificationRequest
+import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.domain.User
@@ -43,6 +45,16 @@ class UserController(
         return userService.findByEmail(email)
     }
 
+    @Put("/{userId}/devices")
+    suspend fun updateDevice(
+        @PathVariable("userId") userId: String,
+        deviceRequest: DeviceRequest
+    ): HttpResponse<Nothing> {
+        val domain = deviceRequest.toDomain()
+        userService.updateDevice(userId, domain)
+        return HttpResponse.noContent()
+    }
+
     @Put("/{userId}/events/{eventId}/join")
     suspend fun join(
         @PathVariable("userId") userId: String,
@@ -59,5 +71,16 @@ class UserController(
     ): HttpResponse<Nothing> {
         userService.cancel(userId, eventId)
         return HttpResponse.noContent()
+    }
+
+    @Post("/{userId}/notification/send")
+    suspend fun sendNotification(
+        @PathVariable("userId") userId: String,
+        notificationRequest: CreateNotificationRequest
+    ): HttpResponse<Map<String, String>> {
+        val notificationId =
+            userService.sendNotification(userId, notificationRequest.title, notificationRequest.message)
+
+        return created(mapOf("id" to notificationId))
     }
 }
