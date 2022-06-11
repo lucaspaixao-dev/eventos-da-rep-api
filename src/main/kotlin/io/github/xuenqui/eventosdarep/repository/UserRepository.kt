@@ -15,6 +15,7 @@ class UserRepository(
         .getDatabase("eventos_da_rep")
         .getCollection<User>("users")
 
+
     suspend fun save(user: User): String {
         val id = UUID.randomUUID().toString()
         collection.insertOne(user.copy(id = id))
