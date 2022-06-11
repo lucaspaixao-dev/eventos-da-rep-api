@@ -8,4 +8,4 @@ netty:
     allocator:
       max-order: 3
 #mongodb.uri: mongodb://admin:1234@${MONGO_HOST:localhost}:${MONGO_PORT:27017}/eventosdarep?authSource=admin
-mongodb.uri: ${MONGO_HOST}
+mongodb.uri: mongodb+srv://admin:7lt6Wpi0q9Zyt8wU@eventos-da-rep.4hhzg.mongodb.net/?retryWrites=true&w=majority
