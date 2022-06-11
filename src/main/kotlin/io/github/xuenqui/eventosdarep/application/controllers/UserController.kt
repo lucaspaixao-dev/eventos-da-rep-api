@@ -13,7 +13,6 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
-import io.micronaut.http.annotation.QueryValue
 import java.time.LocalDateTime
 
 @Controller("/users")
@@ -40,13 +39,6 @@ class UserController(
         val domain = userRequest.toDomain(id = id, updatedAt = LocalDateTime.now())
         return userService.update(domain)
     }
-
-//    @Get
-//    suspend fun findByEmail(
-//        @QueryValue email: String
-//    ): User? {
-//        return userService.findByEmail(email)
-//    }
 
     @Put("/{userId}/devices")
     suspend fun updateDevice(
