@@ -22,7 +22,7 @@ jobs:
       #        run: ./gradlew ktlintCheck
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew clean build
 
       - name: Creating artifact
         run: mkdir production && cp build/libs/eventos-da-rep-api-0.1-all.jar production
