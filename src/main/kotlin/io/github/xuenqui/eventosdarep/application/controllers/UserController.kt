@@ -29,6 +29,9 @@ class UserController(
         return created(mapOf("id" to uuid))
     }
 
+    @Get
+    suspend fun findAll() = userService.findAll()
+
     @Put("/{id}")
     suspend fun update(
         @PathVariable("id") id: String,
@@ -38,12 +41,12 @@ class UserController(
         return userService.update(domain)
     }
 
-    @Get
-    suspend fun findByEmail(
-        @QueryValue email: String
-    ): User? {
-        return userService.findByEmail(email)
-    }
+//    @Get
+//    suspend fun findByEmail(
+//        @QueryValue email: String
+//    ): User? {
+//        return userService.findByEmail(email)
+//    }
 
     @Put("/{userId}/devices")
     suspend fun updateDevice(

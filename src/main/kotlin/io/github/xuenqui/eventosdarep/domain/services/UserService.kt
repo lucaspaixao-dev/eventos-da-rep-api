@@ -17,7 +17,10 @@ class UserService(
     suspend fun create(user: User): String {
         user.device ?: throw IllegalArgumentException("Device should not be null")
 
-        return userRepository.findByEmail(user.email)?.id ?: userRepository.save(user)
+        val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.save(user)
+
+        firebaseMessagingService.subscribeToTopic(user.device!!.token, "users-topic")
+        return userId
     }
 
     suspend fun join(userId: String, eventId: String) {
@@ -26,25 +29,11 @@ class UserService(
 
         event.confirm(userId)
         user.confirm(eventId)
-        eventService.update(event)
+        eventService.update(event.id!!, event)
         userRepository.update(user)
 
-        sendNotificationToUsersOnEvent(userId, event)
-    }
-
-    // TODO: ADD TO RABBITMQ
-    private suspend fun sendNotificationToUsersOnEvent(currentUserId: String, event: Event) {
-        event.users.forEach { userId ->
-            if (currentUserId != userId) {
-                val user = userRepository.findById(userId) ?: return@forEach
-
-                val title = "${user.name} confirmou presença! 🎉"
-                val message = "${user.name} confirmou presença no evento ${event.title}!"
-                val token = user.device?.token ?: return@forEach
-
-                firebaseMessagingService.sendNotification(title, message, token)
-            }
-        }
+        sendNotificationToUsersOnEvent(user, event)
+        firebaseMessagingService.subscribeToTopic(user.device!!.token, eventId)
     }
 
     suspend fun cancel(userId: String, eventId: String) {
@@ -53,8 +42,9 @@ class UserService(
 
         event.giveUp(userId)
         user.remove(eventId)
-        eventService.update(event)
+        eventService.update(event.id!!, event)
         userRepository.update(user)
+        firebaseMessagingService.unsubscribeFromTopic(user.device!!.token, eventId)
     }
 
     suspend fun findByEmail(email: String): User? = userRepository.findByEmail(email)
@@ -79,6 +69,13 @@ class UserService(
         val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
         val token = user.device?.token ?: throw IllegalArgumentException("User has no device")
 
-        return firebaseMessagingService.sendNotification(title, message, token)
+        return firebaseMessagingService.sendNotificationToToken(title, message, token)
+    }
+
+    // TODO: ADD TO RABBITMQ
+    private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
+        val title = "${user.name} confirmou presença! 🎉"
+        val message = "${user.name} confirmou presença no evento ${event.title}!"
+        firebaseMessagingService.sendNotificationToTopic(event.id!!, title, message)
     }
 }

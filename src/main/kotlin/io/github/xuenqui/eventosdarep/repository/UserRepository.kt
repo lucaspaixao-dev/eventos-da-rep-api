@@ -3,8 +3,8 @@ package io.github.xuenqui.eventosdarep.repository
 import com.mongodb.client.model.Filters.eq
 import io.github.xuenqui.eventosdarep.domain.User
 import jakarta.inject.Singleton
-import org.litote.kmongo.coroutine.CoroutineClient
 import java.util.UUID
+import org.litote.kmongo.coroutine.CoroutineClient
 
 @Singleton
 class UserRepository(

@@ -3,8 +3,8 @@ package io.github.xuenqui.eventosdarep.repository
 import com.mongodb.client.model.Filters
 import io.github.xuenqui.eventosdarep.domain.Event
 import jakarta.inject.Singleton
-import java.util.UUID
 import org.litote.kmongo.coroutine.CoroutineClient
+import java.util.UUID
 
 @Singleton
 class EventRepository(
@@ -24,6 +24,9 @@ class EventRepository(
     }
 
     suspend fun findAll(): List<Event> = collection.find().toList()
+
+    suspend fun findActiveEvents(): List<Event> =
+        collection.find(Filters.eq("active", true)).toList()
 
     suspend fun findById(id: String): Event? =
         collection.find(
