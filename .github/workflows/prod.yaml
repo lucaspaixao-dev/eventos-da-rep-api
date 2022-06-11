@@ -32,3 +32,14 @@ jobs:
         with:
           name: GitHub_Actions-prd
           path: production
+
+      - name: Login to Heroku Container registry
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
+
+      - name: Build and push
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: github-actions-example
+        run: heroku plugins:install java && heroku create --no-remote && heroku deploy:jar production/eventos-da-rep-api-0.1-all.jar --app eventos-da-rep-api
