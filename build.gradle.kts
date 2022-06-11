@@ -30,7 +30,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
 
-    implementation("com.google.firebase:firebase-admin:8.1.0")
+    implementation("com.google.firebase:firebase-admin:8.2.0")
 
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("org.litote.kmongo:kmongo-coroutine:4.6.0")
