@@ -114,7 +114,7 @@ jobs:
           username: opc
           key: ${{secrets.VM_SSH_PRIVATE_KEY}}
           script: |
-            pid=`ps aux | grep "app.jar" | awk '{print $2}'`
+            pid=`ps aux | grep "[a]pp.jar" | awk '{print $2}'`
             if [ "$pid" == "" ]; then
               echo "Process not found"
             else
