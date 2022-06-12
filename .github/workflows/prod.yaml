@@ -51,7 +51,7 @@ jobs:
       - name: 'Publish JAR'
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'cicd-demo-${{env.VERSION}}-all.jar'
+          name: 'eventos-da-rep-api-0.1-all.jar'
           path: build/libs/*-all.jar
 
       - name: 'Write Config & Key Files'
@@ -85,7 +85,7 @@ jobs:
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name cicd-demo \
+            --display-name eventos-da-rep-prod \
             --query "data [0].id" \
             --raw-output \
           )" >> $GITHUB_ENV
