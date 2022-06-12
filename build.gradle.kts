@@ -68,6 +68,14 @@ tasks {
         }
     }
 }
+
+task("stage") {
+    dependsOn("build")
+    dependsOn("clean")
+
+    tasks.findByName("build")?.mustRunAfter("clean")
+}
+
 graalvmNative.toolchainDetection.set(false)
 micronaut {
     runtime("netty")
