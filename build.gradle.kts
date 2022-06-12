@@ -69,12 +69,19 @@ tasks {
     }
 }
 
-task("stage") {
+tasks.register("stage") {
     dependsOn("build")
     dependsOn("clean")
 
     tasks.findByName("build")?.mustRunAfter("clean")
 }
+
+tasks.register("copyToLib", Copy::class) {
+    into("$buildDir/libs")
+    from("build/libs/eventos-da-rep-api-0.1-all.jar")
+}
+
+tasks.findByName("stage")?.dependsOn("copyToLib")
 
 graalvmNative.toolchainDetection.set(false)
 micronaut {
