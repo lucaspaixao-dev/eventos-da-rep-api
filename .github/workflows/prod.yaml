@@ -44,6 +44,10 @@ jobs:
       #          HEROKU_APP_NAME: github-actions-example
       #        run: heroku plugins:install java && heroku create --no-remote && heroku deploy:jar production/eventos-da-rep-api-0.1-all.jar --app eventos-da-rep-api
 
+      - name: ACTIONS_ALLOW_UNSECURE_COMMANDS
+        id: ACTIONS_ALLOW_UNSECURE_COMMANDS
+        run: echo 'ACTIONS_ALLOW_UNSECURE_COMMANDS=true' >> $GITHUB_ENV
+
       - name: 'Write Config & Key Files'
         run: |
           mkdir ~/.oci
