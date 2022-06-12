@@ -139,5 +139,5 @@ jobs:
           username: opc
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           script: |
-            sudo mv ~/app/eventos-da-rep-api-0.1-all /app/app.jar
+            sudo mv ~/app/eventos-da-rep-api-0.1-all.jar /app/app.jar
             nohup java -jar /app/app.jar > output.$(date --iso).log 2>&1 &
