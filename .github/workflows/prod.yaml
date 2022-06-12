@@ -79,7 +79,6 @@ jobs:
             oci compute instance list \
             --lifecycle-state RUNNING \
             --compartment-id ${{secrets.VM_COMPARTMENT_OCID}} \
-            --display-name cicd-demo \
             --query "data [0].id" \
             --raw-output \
           )"    
@@ -121,7 +120,7 @@ jobs:
           host: ${{ env.INSTANCE_IP }}
           username: opc
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
-          source: "build/libs/cicd-demo-${{env.VERSION}}-all.jar"
+          source: "build/libs/eventos-da-rep-api-0.1-all.jar"
           target: "app"
           strip_components: 2
 
@@ -132,5 +131,5 @@ jobs:
           username: opc
           key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
           script: |
-            sudo mv ~/app/cicd-demo-${{env.VERSION}}-all.jar /app/cicd-demo.jar
-            nohup java -jar /app/cicd-demo.jar > output.$(date --iso).log 2>&1 &
+            sudo mv ~/app/eventos-da-rep-api-0.1-all.jar /app/app.jar
+            nohup java -jar /app/app.jar > output.$(date --iso).log 2>&1 &
