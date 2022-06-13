@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eventos-da-rep-api
   server:
-    port: 8080
+    port: ${PORT:8080}
 
 datasources:
   default:
@@ -19,4 +19,4 @@ netty:
       max-order: 3
 
 server:
-  port: 8080
+  port: ${PORT:8080}
