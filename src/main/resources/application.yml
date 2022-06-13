@@ -4,7 +4,7 @@ micronaut:
 
 datasources:
   default:
-    url: ${DATABASE_URL}
+    url: ${DATABASE_URL_2}
     driverClassName: org.postgresql.Driver
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
