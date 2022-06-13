@@ -1,19 +1,18 @@
 version: '3.8'
 
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb
+  db:
+    container_name: eventos-da-rep-db-container
+    image: postgres:14.2-alpine
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: 1234
-      MONGO_INITDB_DATABASE: eventos_da_rep
+      - POSTGRES_USER=eventos_da_rep_admin
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=eventos_da_rep_db
     ports:
-      - "27017:27017"
-#    volumes:
-#      - ./resources/db.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-#    command: [ "--bind_ip_all" ]
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
 

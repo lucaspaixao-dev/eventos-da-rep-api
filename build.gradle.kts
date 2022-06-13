@@ -32,21 +32,18 @@ dependencies {
 
     implementation("com.google.firebase:firebase-admin:8.2.0")
 
-    implementation("io.micronaut.data:micronaut-data-mongodb")
-    implementation("org.litote.kmongo:kmongo-coroutine:4.6.0")
-    implementation("org.litote.kmongo:kmongo:4.6.0")
+    implementation("io.micronaut.data:micronaut-data-jdbc")
+    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
 
-    runtimeOnly("org.apache.logging.log4j:log4j-api:2.17.2")
-    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
+    runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.mongodb:mongodb-driver-sync")
+    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.testcontainers:junit-jupiter")
-    testImplementation("org.testcontainers:mongodb")
+    testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:testcontainers")
-
-    implementation("io.micronaut:micronaut-validation")
-
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
 application {

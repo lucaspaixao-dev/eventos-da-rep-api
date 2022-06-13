@@ -4,7 +4,6 @@ import io.github.xuenqui.eventosdarep.application.controllers.requests.CreateNot
 import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
-import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.created
@@ -13,7 +12,7 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
-import java.time.LocalDateTime
+import io.micronaut.http.annotation.QueryValue
 
 @Controller("/users")
 class UserController(
@@ -21,7 +20,7 @@ class UserController(
 ) {
 
     @Post
-    suspend fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
+    fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
         val domain = userRequest.toDomain()
         val uuid = userService.create(domain)
 
@@ -29,19 +28,22 @@ class UserController(
     }
 
     @Get
-    suspend fun findAll() = userService.findAll()
+    fun findAll(
+        @QueryValue(value = "page", defaultValue = "0") page: String,
+        @QueryValue(value = "size", defaultValue = "20") size: String,
+    ) = userService.findAll(page.toInt(), size.toInt())
 
     @Put("/{id}")
-    suspend fun update(
+    fun update(
         @PathVariable("id") id: String,
         userRequest: UserRequest
-    ): User {
-        val domain = userRequest.toDomain(id = id, updatedAt = LocalDateTime.now())
-        return userService.update(domain)
+    ): HttpResponse<Nothing> {
+        userService.update(id, userRequest.toDomain())
+        return HttpResponse.noContent()
     }
 
     @Put("/{userId}/devices")
-    suspend fun updateDevice(
+    fun updateDevice(
         @PathVariable("userId") userId: String,
         deviceRequest: DeviceRequest
     ): HttpResponse<Nothing> {
@@ -50,26 +52,8 @@ class UserController(
         return HttpResponse.noContent()
     }
 
-    @Put("/{userId}/events/{eventId}/join")
-    suspend fun join(
-        @PathVariable("userId") userId: String,
-        @PathVariable("eventId") eventId: String
-    ): HttpResponse<Nothing> {
-        userService.join(userId, eventId)
-        return HttpResponse.noContent()
-    }
-
-    @Put("/{userId}/events/{eventId}/cancel")
-    suspend fun cancel(
-        @PathVariable("userId") userId: String,
-        @PathVariable("eventId") eventId: String
-    ): HttpResponse<Nothing> {
-        userService.cancel(userId, eventId)
-        return HttpResponse.noContent()
-    }
-
     @Post("/{userId}/notification/send")
-    suspend fun sendNotification(
+    fun sendNotification(
         @PathVariable("userId") userId: String,
         notificationRequest: CreateNotificationRequest
     ): HttpResponse<Map<String, String>> {

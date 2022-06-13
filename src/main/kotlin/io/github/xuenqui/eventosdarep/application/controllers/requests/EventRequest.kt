@@ -18,8 +18,7 @@ data class EventRequest(
     val active: Boolean = true,
 )
 
-fun EventRequest.toDomain(id: String? = null, updatedAt: LocalDateTime? = null) = Event(
-    id = id,
+fun EventRequest.toDomain() = Event(
     title = this.title,
     latitude = this.latitude,
     longitude = this.longitude,
@@ -31,5 +30,4 @@ fun EventRequest.toDomain(id: String? = null, updatedAt: LocalDateTime? = null) 
     begin = this.begin,
     end = this.end,
     active = this.active,
-    updatedAt = updatedAt
 )

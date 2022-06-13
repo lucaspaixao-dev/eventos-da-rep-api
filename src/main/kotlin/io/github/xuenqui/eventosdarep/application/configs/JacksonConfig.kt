@@ -1,4 +1,4 @@
-package io.github.xuenqui.eventosdarep.application.factories
+package io.github.xuenqui.eventosdarep.application.configs
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature

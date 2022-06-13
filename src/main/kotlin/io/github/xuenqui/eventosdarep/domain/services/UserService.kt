@@ -1,81 +1,96 @@
 package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Device
-import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.firebase.FirebaseMessagingService
 import io.github.xuenqui.eventosdarep.repository.UserRepository
 import jakarta.inject.Singleton
+import java.time.LocalDateTime
+import java.util.UUID
 
 @Singleton
 class UserService(
     private val userRepository: UserRepository,
-    private val eventService: EventService,
     private val firebaseMessagingService: FirebaseMessagingService
 ) {
 
-    suspend fun create(user: User): String {
-        user.device ?: throw IllegalArgumentException("Device should not be null")
+    fun create(user: User): String {
+        if (user.device == null) {
+            throw IllegalArgumentException("Device não infornado")
+        }
 
-        val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.save(user)
+        val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.create(user)
 
-        firebaseMessagingService.subscribeToTopic(user.device!!.token, "users-topic")
+        firebaseMessagingService.subscribeToTopic(user.device.token, "users-topic")
         return userId
     }
 
-    suspend fun join(userId: String, eventId: String) {
-        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
-        val event = eventService.findById(eventId) ?: throw IllegalArgumentException("Event not found")
+    fun findAll(page: Int, size: Int): List<User> = userRepository.findAll(page, size)
 
-        event.confirm(userId)
-        user.confirm(eventId)
-        eventService.update(event.id!!, event)
-        userRepository.update(user)
+    fun findById(id: String): User? = userRepository.findById(id)
 
-        sendNotificationToUsersOnEvent(user, event)
-        firebaseMessagingService.subscribeToTopic(user.device!!.token, eventId)
+    fun update(userId: String, user: User) {
+        val foundUser = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+
+        if (user.device == null) {
+            throw IllegalArgumentException("Device não infornado")
+        }
+
+        val newUser = foundUser.copy(
+            name = user.name,
+            email = user.email,
+            device = user.device.copy(
+                token = user.device.token,
+                brand = user.device.brand,
+                model = user.device.model,
+                createdAt = user.device.createdAt
+            ),
+            authenticationId = user.authenticationId,
+            isAdmin = user.isAdmin,
+            photo = user.photo,
+            createdAt = user.createdAt,
+        )
+
+        userRepository.update(newUser)
     }
 
-    suspend fun cancel(userId: String, eventId: String) {
-        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
-        val event = eventService.findById(eventId) ?: throw IllegalArgumentException("Event not found")
+    fun updateDevice(userId: String, device: Device) {
+        val foundUser = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
 
-        event.giveUp(userId)
-        user.remove(eventId)
-        eventService.update(event.id!!, event)
-        userRepository.update(user)
-        firebaseMessagingService.unsubscribeFromTopic(user.device!!.token, eventId)
-    }
+        val newUser = if (foundUser.device != null) {
+            foundUser.copy(
+                device = device.copy(
+                    token = device.token,
+                    brand = device.brand,
+                    model = device.model,
+                    createdAt = device.createdAt
+                )
+            )
+        } else {
+            foundUser.copy(
+                device = Device(
+                    id = UUID.randomUUID().toString(),
+                    token = device.token,
+                    brand = device.brand,
+                    model = device.model,
+                    createdAt = LocalDateTime.now()
+                )
+            )
+        }
 
-    suspend fun findByEmail(email: String): User? = userRepository.findByEmail(email)
-
-    suspend fun findById(id: String): User? = userRepository.findById(id)
-
-    suspend fun findAll(): List<User> = userRepository.findAll()
-
-    suspend fun update(user: User): User {
-        // TODO: ajustar createdAt
-        userRepository.update(user)
-        return user
-    }
-
-    suspend fun updateDevice(userId: String, device: Device) {
-        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
-        user.device = device
-        userRepository.update(user)
-    }
-
-    suspend fun sendNotification(userId: String, title: String, message: String): String {
-        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
-        val token = user.device?.token ?: throw IllegalArgumentException("User has no device")
-
-        return firebaseMessagingService.sendNotificationToToken(title, message, token)
+        userRepository.update(newUser)
     }
 
     // TODO: ADD TO RABBITMQ
-    private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
-        val title = "${user.name} confirmou presença! 🎉"
-        val message = "${user.name} confirmou presença no evento ${event.title}!"
-        firebaseMessagingService.sendNotificationToTopic(event.id!!, title, message)
+    fun sendNotification(userId: String, title: String, message: String): String {
+        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+
+        if (user.device == null) {
+            throw IllegalArgumentException("Usuário não possui um device registrado")
+        }
+
+        val token = user.device.token
+
+        return firebaseMessagingService.sendNotificationToToken(title, message, token)
     }
 }
