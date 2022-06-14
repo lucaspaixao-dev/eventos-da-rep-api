@@ -3,6 +3,7 @@ package io.github.xuenqui.eventosdarep.application.controllers
 import io.github.xuenqui.eventosdarep.application.controllers.requests.CreateNotificationRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.EventRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
+import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
 import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.services.EventService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
@@ -22,6 +23,8 @@ class EventController(
     @Post
     fun create(eventRequest: EventRequest): HttpResponse<Map<String, String>> {
         logger.info("Request received to create a new event, $eventRequest")
+
+        eventRequest.validateRequest()
         val domain = eventRequest.toDomain()
         val uuid = eventService.create(domain)
 
@@ -51,6 +54,8 @@ class EventController(
         eventRequest: EventRequest
     ): Event {
         logger.info("Request received to update event, $eventRequest")
+
+        eventRequest.validateRequest()
         val domain = eventRequest.toDomain()
         return eventService.update(id, domain).also {
             logger.info("Event updated, $it")

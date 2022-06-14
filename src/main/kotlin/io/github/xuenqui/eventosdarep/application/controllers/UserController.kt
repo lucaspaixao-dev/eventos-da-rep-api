@@ -4,6 +4,7 @@ import io.github.xuenqui.eventosdarep.application.controllers.requests.CreateNot
 import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
+import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
 import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
@@ -24,6 +25,7 @@ class UserController(
     fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
         logger.info("Request received to create a new user $userRequest")
 
+        userRequest.validateRequest()
         val domain = userRequest.toDomain()
         val uuid = userService.create(domain)
 
@@ -44,6 +46,8 @@ class UserController(
         userRequest: UserRequest
     ): HttpResponse<Nothing> {
         logger.info("Request received to update user with id $id, $userRequest")
+
+        userRequest.validateRequest()
         userService.update(id, userRequest.toDomain())
         return HttpResponse.noContent()
     }

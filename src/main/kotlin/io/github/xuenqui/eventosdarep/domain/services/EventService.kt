@@ -2,6 +2,7 @@ package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
+import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
@@ -20,7 +21,7 @@ class EventService(
 
     fun create(event: Event): String {
         eventRepository.findByTitle(event.title)
-            ?.run { throw ValidationException("Event with title ${event.title} already exists") }
+            ?.run { throw ResourceAlreadyExistsException("Event with title ${event.title} already exists") }
 
         return eventRepository.create(event).also {
             sendNotificationNewEvent(event)
