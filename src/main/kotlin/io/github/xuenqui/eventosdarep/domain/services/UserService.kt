@@ -2,6 +2,8 @@ package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
+import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
+import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
@@ -17,16 +19,14 @@ class UserService(
 ) {
 
     fun create(user: User): String {
-        if (user.device == null) {
-            throw IllegalArgumentException("Device não infornado")
-        }
+        validateDevice(user)
 
         val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.create(user)
 
         notificationClient.sendUnsubscriptionOnTopicEvent(
             TopicMessage(
                 topic = "users-topic",
-                token = user.device.token
+                token = user.device!!.token
             )
         )
 
@@ -38,16 +38,14 @@ class UserService(
     fun findById(id: String): User? = userRepository.findById(id)
 
     fun update(userId: String, user: User) {
-        val foundUser = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+        val foundUser = getUserOrThrowAnException(userId)
 
-        if (user.device == null) {
-            throw IllegalArgumentException("Device não infornado")
-        }
+        validateDevice(user)
 
         val newUser = foundUser.copy(
             name = user.name,
             email = user.email,
-            device = user.device.copy(
+            device = user.device!!.copy(
                 token = user.device.token,
                 brand = user.device.brand,
                 model = user.device.model,
@@ -63,7 +61,7 @@ class UserService(
     }
 
     fun updateDevice(userId: String, device: Device) {
-        val foundUser = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+        val foundUser = getUserOrThrowAnException(userId)
 
         val newUser = if (foundUser.device != null) {
             foundUser.copy(
@@ -90,10 +88,10 @@ class UserService(
     }
 
     fun sendNotification(userId: String, title: String, message: String) {
-        val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
+        val user = getUserOrThrowAnException(userId)
 
         if (user.device == null) {
-            throw IllegalArgumentException("Usuário não possui um device registrado")
+            throw ValidationException("User has no device")
         }
 
         val token = user.device.token
@@ -105,5 +103,13 @@ class UserService(
                 message = message
             )
         )
+    }
+
+    private fun getUserOrThrowAnException(userId: String) =
+        userRepository.findById(userId) ?: throw ResourceNotFoundException("User not found")
+    private fun validateDevice(user: User) {
+        if (user.device == null) {
+            throw ValidationException("Device is required")
+        }
     }
 }

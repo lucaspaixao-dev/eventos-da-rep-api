@@ -2,6 +2,7 @@ package io.github.xuenqui.eventosdarep.resources.repository
 
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
+import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.entities.DeviceEntity
 import io.github.xuenqui.eventosdarep.resources.repository.entities.UserEntity
@@ -12,79 +13,97 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Repository
+@SuppressWarnings("TooGenericExceptionCaught")
 open class UserRepository(
     private val postgresUserRepository: PostgresUserRepository,
     private val postgresDeviceRepository: PostgresDeviceRepository
 ) {
 
-    fun findAll(page: Int, size: Int): List<User> {
-        val sort = Sort.UNSORTED.order(Sort.Order.asc("name"))
-        val pageable = Pageable.from(page, size, sort)
+    fun findAll(page: Int, size: Int): List<User> =
+        try {
+            val sort = Sort.UNSORTED.order(Sort.Order.asc("name"))
+            val pageable = Pageable.from(page, size, sort)
 
-        logger.info("finding all users")
+            logger.info("finding all users")
 
-        return postgresUserRepository.findAll(pageable).map { it.toDomain() }.toList()
-    }
+            postgresUserRepository.findAll(pageable).map { it.toDomain() }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding all users", e)
+        }
 
     fun findByEmail(email: String): User? =
-        postgresUserRepository.findByEmail(email).also {
-            logger.info("finding user by email: $email")
-        }.orElse(null)?.toDomain()
+        try {
+            postgresUserRepository.findByEmail(email).also {
+                logger.info("finding user by email: $email")
+            }.orElse(null)?.toDomain()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding user by email", e)
+        }
 
     fun findById(id: String): User? =
-        postgresUserRepository.findById(id).also {
-            logger.info("finding user by id: $id")
-        }.orElse(null)?.toDomain()
+        try {
+            postgresUserRepository.findById(id).also {
+                logger.info("finding user by id: $id")
+            }.orElse(null)?.toDomain()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding user by id", e)
+        }
 
-    fun create(user: User): String {
-        val userId = UUID.randomUUID().toString()
+    fun create(user: User): String =
+        try {
+            val userId = UUID.randomUUID().toString()
 
-        val deviceEntity = DeviceEntity(
-            id = UUID.randomUUID().toString(),
-            device = user.device!!,
-            createdAt = LocalDateTime.now(),
-        )
+            val deviceEntity = DeviceEntity(
+                id = UUID.randomUUID().toString(),
+                device = user.device!!,
+                createdAt = LocalDateTime.now(),
+            )
 
-        logger.info("creating a new device: $deviceEntity")
+            logger.info("creating a new device: $deviceEntity")
 
-        postgresDeviceRepository.save(deviceEntity)
+            postgresDeviceRepository.save(deviceEntity)
 
-        val userEntity = UserEntity(
-            id = userId,
-            user = user,
-            device = deviceEntity,
-            createdAt = LocalDateTime.now()
-        )
+            val userEntity = UserEntity(
+                id = userId,
+                user = user,
+                device = deviceEntity,
+                createdAt = LocalDateTime.now()
+            )
 
-        logger.info("creating a new user: $deviceEntity")
+            logger.info("creating a new user: $deviceEntity")
 
-        postgresUserRepository.save(userEntity)
-        return userId
-    }
+            postgresUserRepository.save(userEntity)
+            userId
+        } catch (e: Exception) {
+            throw RepositoryException("error creating user", e)
+        }
 
-    fun update(user: User): User {
-        val deviceEntity = DeviceEntity(
-            id = UUID.randomUUID().toString(),
-            device = user.device!!,
-            createdAt = user.device.createdAt ?: LocalDateTime.now(),
-            updatedAt = user.device.updatedAt ?: LocalDateTime.now()
-        )
+    fun update(user: User): User =
+        try {
+            val deviceEntity = DeviceEntity(
+                id = UUID.randomUUID().toString(),
+                device = user.device!!,
+                createdAt = user.device.createdAt ?: LocalDateTime.now(),
+                updatedAt = user.device.updatedAt ?: LocalDateTime.now()
+            )
 
-        logger.info("updating the device: $deviceEntity")
+            logger.info("updating the device: $deviceEntity")
 
-        postgresDeviceRepository.update(deviceEntity)
+            postgresDeviceRepository.update(deviceEntity)
 
-        val userEntity = UserEntity(
-            id = user.id!!,
-            user = user,
-            device = deviceEntity,
-            createdAt = user.createdAt ?: LocalDateTime.now(),
-            updatedAt = LocalDateTime.now()
-        )
+            val userEntity = UserEntity(
+                id = user.id!!,
+                user = user,
+                device = deviceEntity,
+                createdAt = user.createdAt ?: LocalDateTime.now(),
+                updatedAt = LocalDateTime.now()
+            )
 
-        logger.info("updating the user: $deviceEntity")
-        return postgresUserRepository.update(userEntity).toDomain()
-    }
+            logger.info("updating the user: $deviceEntity")
+            postgresUserRepository.update(userEntity).toDomain()
+        } catch (e: Exception) {
+            throw RepositoryException("error updating user", e)
+        }
 
     companion object : LoggableClass()
 }
@@ -108,25 +127,4 @@ fun DeviceEntity.toDomain() = Device(
     token = this.token,
     createdAt = this.createdAt,
     updatedAt = this.updatedAt
-)
-
-fun User.toEntity() = UserEntity(
-    id = this.id,
-    name = this.name,
-    email = this.email,
-    photo = this.photo,
-    isAdmin = this.isAdmin,
-    authenticationId = this.authenticationId,
-    createdAt = this.createdAt ?: LocalDateTime.now(),
-    updatedAt = this.updatedAt,
-    device = this.device?.toEntity()
-)
-
-fun Device.toEntity() = DeviceEntity(
-    id = this.id,
-    brand = this.brand,
-    model = this.model,
-    token = this.token,
-    createdAt = this.createdAt ?: LocalDateTime.now(),
-    updatedAt = this.updatedAt ?: LocalDateTime.now()
 )

@@ -2,6 +2,8 @@ package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
+import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
+import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
@@ -9,6 +11,7 @@ import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
 
 @Singleton
+@SuppressWarnings("TooManyFunctions")
 class EventService(
     private val eventRepository: EventRepository,
     private val userService: UserService,
@@ -16,10 +19,12 @@ class EventService(
 ) {
 
     fun create(event: Event): String {
-        val id = eventRepository.create(event)
+        eventRepository.findByTitle(event.title)
+            ?.run { throw ValidationException("Event with title ${event.title} already exists") }
 
-        sendNotificationNewEvent(event)
-        return id
+        return eventRepository.create(event).also {
+            sendNotificationNewEvent(event)
+        }
     }
 
     fun findById(id: String): Event? = eventRepository.findById(id)
@@ -30,7 +35,7 @@ class EventService(
         eventRepository.findByActive(true, page, size)
 
     fun update(eventId: String, event: Event): Event {
-        val existsEvent = eventRepository.findById(eventId) ?: throw IllegalArgumentException("Evento não encontrado")
+        val existsEvent = eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
 
         val newEvent = event.copy(
             id = eventId,
@@ -44,12 +49,9 @@ class EventService(
     }
 
     fun join(eventId: String, userId: String) {
-        val event = eventRepository.findById(eventId) ?: throw IllegalArgumentException("Evento não encontrado")
-        val user = userService.findById(userId) ?: throw IllegalArgumentException("Usuário não encontrado")
-
-        if (user.device == null) {
-            throw IllegalArgumentException("Usuário não possui um device registrado")
-        }
+        val event = getEventOrThrowAnException(eventId)
+        val user = getUserOrThrowAnException(userId)
+        getDeviceOrThrowAnException(user)
 
         var isGoing = false
 
@@ -66,19 +68,16 @@ class EventService(
             notificationClient.sendSubscriptionOnTopicEvent(
                 TopicMessage(
                     topic = eventId,
-                    token = user.device.token
+                    token = user.device!!.token
                 )
             )
         }
     }
 
     fun remove(eventId: String, userId: String) {
-        val event = eventRepository.findById(eventId) ?: throw IllegalArgumentException("Evento não encontrado")
-        val user = userService.findById(userId) ?: throw IllegalArgumentException("Usuário não encontrado")
-
-        if (user.device == null) {
-            throw IllegalArgumentException("Usuário não possui um device registrado")
-        }
+        val event = getEventOrThrowAnException(eventId)
+        val user = getUserOrThrowAnException(userId)
+        getDeviceOrThrowAnException(user)
 
         event.users.find {
             it.id == user.id
@@ -88,14 +87,14 @@ class EventService(
             notificationClient.sendUnsubscriptionOnTopicEvent(
                 TopicMessage(
                     topic = eventId,
-                    token = user.device.token
+                    token = user.device!!.token
                 )
             )
         }
     }
 
     fun sendNotification(eventId: String, title: String, message: String) {
-        val event = eventRepository.findById(eventId) ?: throw IllegalArgumentException("Evento não encontrado")
+        val event = eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
 
         val newTitle = "${event.title}: $title"
 
@@ -132,5 +131,17 @@ class EventService(
                 title = title
             )
         )
+    }
+
+    private fun getUserOrThrowAnException(userId: String) =
+        userService.findById(userId) ?: throw ResourceNotFoundException("User not found")
+
+    private fun getEventOrThrowAnException(eventId: String) =
+        eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
+
+    private fun getDeviceOrThrowAnException(user: User) {
+        if (user.device == null) {
+            throw ValidationException("User must have a device")
+        }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.xuenqui.eventosdarep.resources.repository
 
 import io.github.xuenqui.eventosdarep.domain.Event
+import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.entities.EventEntity
 import io.micronaut.data.annotation.Repository
@@ -10,62 +11,96 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Repository
+@SuppressWarnings("TooGenericExceptionCaught")
 open class EventRepository(
     private val postgresEventRepository: PostgresEventRepository
 ) {
 
-    fun findAll(page: Int, size: Int): List<Event> {
-        val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
-        val pageable = Pageable.from(page, size, sort)
+    fun findAll(page: Int, size: Int): List<Event> =
+        try {
+            val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
+            val pageable = Pageable.from(page, size, sort)
 
-        logger.info("finding all events")
+            logger.info("finding all events")
 
-        return postgresEventRepository.findAll(pageable).map { it.toDomain() }.toList()
-    }
+            postgresEventRepository.findAll(pageable).map { it.toDomain() }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding all events", e)
+        }
 
-    fun findByActive(isActive: Boolean, page: Int, size: Int): List<Event> {
-        val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
-        val pageable = Pageable.from(page, size, sort)
+    fun findByTitle(title: String): Event? =
+        try {
+            logger.info("finding event by title: $title")
 
-        logger.info("finding all active events")
+            postgresEventRepository.findByTitle(title).orElse(null)?.toDomain()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding event by title: $title", e)
+        }
 
-        return postgresEventRepository.findByActive(isActive, pageable).map { it.toDomain() }.toList()
-    }
+    fun findByActive(isActive: Boolean, page: Int, size: Int): List<Event> =
+        try {
+            val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
+            val pageable = Pageable.from(page, size, sort)
+
+            logger.info("finding all active events")
+
+            postgresEventRepository.findByActive(isActive, pageable).map { it.toDomain() }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding all active events", e)
+        }
 
     fun findById(eventId: String): Event? =
-        postgresEventRepository.findById(eventId).also {
-            logger.info("finding event by id: $eventId")
-        }.map { it.toDomain() }.orElse(null)
+        try {
+            postgresEventRepository.findById(eventId).also {
+                logger.info("finding event by id: $eventId")
+            }.map { it.toDomain() }.orElse(null)
+        } catch (e: Exception) {
+            throw RepositoryException("error finding event by id: $eventId", e)
+        }
 
-    fun create(event: Event): String {
-        val eventId = UUID.randomUUID().toString()
-        val eventEntity = EventEntity(eventId, event, LocalDateTime.now(), emptyList())
+    fun create(event: Event): String =
+        try {
+            val eventId = UUID.randomUUID().toString()
+            val eventEntity = EventEntity(eventId, event, LocalDateTime.now(), emptyList())
 
-        logger.info("creating a new event $event")
+            logger.info("creating a new event $event")
 
-        postgresEventRepository.save(eventEntity)
+            postgresEventRepository.save(eventEntity)
 
-        return eventId
-    }
+            eventId
+        } catch (e: Exception) {
+            throw RepositoryException("error creating event", e)
+        }
 
-    fun update(eventId: String, event: Event) {
-        val eventEntity = EventEntity(eventId, event, event.createdAt, LocalDateTime.now())
+    fun update(eventId: String, event: Event) =
+        try {
+            val eventEntity = EventEntity(eventId, event, event.createdAt, LocalDateTime.now())
 
-        logger.info("updating the event $event")
+            logger.info("updating the event $event")
 
-        postgresEventRepository.update(eventEntity)
-    }
+            postgresEventRepository.update(eventEntity)
+        } catch (e: Exception) {
+            throw RepositoryException("error updating event", e)
+        }
 
     fun joinEvent(eventId: String, userId: String) {
-        logger.info("user $userId joining the event $eventId")
+        try {
+            logger.info("user $userId joining the event $eventId")
 
-        postgresEventRepository.joinEvent(eventId, userId)
+            postgresEventRepository.joinEvent(eventId, userId)
+        } catch (e: Exception) {
+            throw RepositoryException("error joining event", e)
+        }
     }
 
     fun exitEvent(eventId: String, userId: String) {
-        logger.info("user $userId exiting the event $eventId")
+        try {
+            logger.info("user $userId exiting the event $eventId")
 
-        postgresEventRepository.exitEvent(eventId, userId)
+            postgresEventRepository.exitEvent(eventId, userId)
+        } catch (e: Exception) {
+            throw RepositoryException("error exiting event", e)
+        }
     }
 
     companion object : LoggableClass()

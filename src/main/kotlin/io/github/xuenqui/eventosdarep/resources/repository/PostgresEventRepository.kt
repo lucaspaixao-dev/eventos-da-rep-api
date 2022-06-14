@@ -22,6 +22,8 @@ interface PostgresEventRepository : PageableRepository<EventEntity, String> {
     @Join(value = "users", type = Join.Type.LEFT_FETCH)
     override fun findById(id: String): Optional<EventEntity>
 
+    fun findByTitle(title: String): Optional<EventEntity>
+
     @Query("INSERT INTO event_entity_user_entity (event_entity_id, user_entity_id) VALUES (:eventId, :userId)")
     fun joinEvent(eventId: String, userId: String)
 
