@@ -1,4 +1,4 @@
-package io.github.xuenqui.eventosdarep.repository.entities
+package io.github.xuenqui.eventosdarep.resources.repository.entities
 
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.micronaut.data.annotation.Id

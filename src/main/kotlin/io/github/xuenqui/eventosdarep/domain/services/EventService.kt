@@ -2,15 +2,17 @@ package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
-import io.github.xuenqui.eventosdarep.firebase.FirebaseMessagingService
-import io.github.xuenqui.eventosdarep.repository.EventRepository
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
+import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
 
 @Singleton
 class EventService(
     private val eventRepository: EventRepository,
     private val userService: UserService,
-    private val firebaseMessagingService: FirebaseMessagingService
+    private val notificationClient: NotificationClient
 ) {
 
     fun create(event: Event): String {
@@ -61,7 +63,12 @@ class EventService(
             eventRepository.joinEvent(eventId, userId)
 
             sendNotificationToUsersOnEvent(user, event)
-            firebaseMessagingService.subscribeToTopic(user.device.token, eventId)
+            notificationClient.sendSubscriptionOnTopicEvent(
+                TopicMessage(
+                    topic = eventId,
+                    token = user.device.token
+                )
+            )
         }
     }
 
@@ -77,31 +84,53 @@ class EventService(
             it.id == user.id
         }?.let {
             eventRepository.exitEvent(eventId, it.id!!)
-            firebaseMessagingService.unsubscribeFromTopic(user.device.token, eventId)
+
+            notificationClient.sendUnsubscriptionOnTopicEvent(
+                TopicMessage(
+                    topic = eventId,
+                    token = user.device.token
+                )
+            )
         }
     }
 
-    // TODO: ADD TO RABBITMQ
-    fun sendNotification(eventId: String, title: String, message: String): String {
+    fun sendNotification(eventId: String, title: String, message: String) {
         val event = eventRepository.findById(eventId) ?: throw IllegalArgumentException("Evento não encontrado")
 
         val newTitle = "${event.title}: $title"
-        return firebaseMessagingService.sendNotificationToTopic(eventId, newTitle, message)
+
+        notificationClient.sendNotificationEventToken(
+            NotificationMessageTopic(
+                topic = eventId,
+                message = message,
+                title = newTitle
+            )
+        )
     }
 
-    // TODO: ADD TO RABBITMQ
     private fun sendNotificationNewEvent(event: Event) {
         val title = "${event.title} disponível! 🤩"
         val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
 
-        val id = firebaseMessagingService.sendNotificationToTopic("users-topic", title, message)
-        print(id)
+        notificationClient.sendNotificationEventToken(
+            NotificationMessageTopic(
+                topic = "users-topic",
+                message = message,
+                title = title
+            )
+        )
     }
 
-    // TODO: ADD TO RABBITMQ
     private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
         val title = "${user.name} confirmou presença! 🎉"
         val message = "${user.name} confirmou presença no evento ${event.title}!"
-        firebaseMessagingService.sendNotificationToTopic(event.id!!, title, message)
+
+        notificationClient.sendNotificationEventToken(
+            NotificationMessageTopic(
+                topic = event.id!!,
+                message = message,
+                title = title
+            )
+        )
     }
 }

@@ -36,6 +36,8 @@ dependencies {
     implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
 
+    implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
+
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.mongodb:mongodb-driver-sync")

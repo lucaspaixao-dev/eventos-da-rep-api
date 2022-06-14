@@ -1,9 +1,10 @@
-package io.github.xuenqui.eventosdarep.repository
+package io.github.xuenqui.eventosdarep.resources.repository
 
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
-import io.github.xuenqui.eventosdarep.repository.entities.DeviceEntity
-import io.github.xuenqui.eventosdarep.repository.entities.UserEntity
+import io.github.xuenqui.eventosdarep.logging.LoggableClass
+import io.github.xuenqui.eventosdarep.resources.repository.entities.DeviceEntity
+import io.github.xuenqui.eventosdarep.resources.repository.entities.UserEntity
 import io.micronaut.data.annotation.Repository
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
@@ -20,14 +21,20 @@ open class UserRepository(
         val sort = Sort.UNSORTED.order(Sort.Order.asc("name"))
         val pageable = Pageable.from(page, size, sort)
 
+        logger.info("finding all users")
+
         return postgresUserRepository.findAll(pageable).map { it.toDomain() }.toList()
     }
 
     fun findByEmail(email: String): User? =
-        postgresUserRepository.findByEmail(email).orElse(null)?.toDomain()
+        postgresUserRepository.findByEmail(email).also {
+            logger.info("finding user by email: $email")
+        }.orElse(null)?.toDomain()
 
     fun findById(id: String): User? =
-        postgresUserRepository.findById(id).orElse(null)?.toDomain()
+        postgresUserRepository.findById(id).also {
+            logger.info("finding user by id: $id")
+        }.orElse(null)?.toDomain()
 
     fun create(user: User): String {
         val userId = UUID.randomUUID().toString()
@@ -38,6 +45,8 @@ open class UserRepository(
             createdAt = LocalDateTime.now(),
         )
 
+        logger.info("creating a new device: $deviceEntity")
+
         postgresDeviceRepository.save(deviceEntity)
 
         val userEntity = UserEntity(
@@ -46,6 +55,8 @@ open class UserRepository(
             device = deviceEntity,
             createdAt = LocalDateTime.now()
         )
+
+        logger.info("creating a new user: $deviceEntity")
 
         postgresUserRepository.save(userEntity)
         return userId
@@ -59,6 +70,8 @@ open class UserRepository(
             updatedAt = user.device.updatedAt ?: LocalDateTime.now()
         )
 
+        logger.info("updating the device: $deviceEntity")
+
         postgresDeviceRepository.update(deviceEntity)
 
         val userEntity = UserEntity(
@@ -69,8 +82,11 @@ open class UserRepository(
             updatedAt = LocalDateTime.now()
         )
 
+        logger.info("updating the user: $deviceEntity")
         return postgresUserRepository.update(userEntity).toDomain()
     }
+
+    companion object : LoggableClass()
 }
 
 fun UserEntity.toDomain() = User(

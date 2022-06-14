@@ -1,6 +1,6 @@
-package io.github.xuenqui.eventosdarep.repository
+package io.github.xuenqui.eventosdarep.resources.repository
 
-import io.github.xuenqui.eventosdarep.repository.entities.UserEntity
+import io.github.xuenqui.eventosdarep.resources.repository.entities.UserEntity
 import io.micronaut.data.annotation.Join
 import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.Page

@@ -2,8 +2,10 @@ package io.github.xuenqui.eventosdarep.domain.services
 
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
-import io.github.xuenqui.eventosdarep.firebase.FirebaseMessagingService
-import io.github.xuenqui.eventosdarep.repository.UserRepository
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
+import io.github.xuenqui.eventosdarep.resources.repository.UserRepository
 import jakarta.inject.Singleton
 import java.time.LocalDateTime
 import java.util.UUID
@@ -11,7 +13,7 @@ import java.util.UUID
 @Singleton
 class UserService(
     private val userRepository: UserRepository,
-    private val firebaseMessagingService: FirebaseMessagingService
+    private val notificationClient: NotificationClient
 ) {
 
     fun create(user: User): String {
@@ -21,7 +23,13 @@ class UserService(
 
         val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.create(user)
 
-        firebaseMessagingService.subscribeToTopic(user.device.token, "users-topic")
+        notificationClient.sendUnsubscriptionOnTopicEvent(
+            TopicMessage(
+                topic = "users-topic",
+                token = user.device.token
+            )
+        )
+
         return userId
     }
 
@@ -81,8 +89,7 @@ class UserService(
         userRepository.update(newUser)
     }
 
-    // TODO: ADD TO RABBITMQ
-    fun sendNotification(userId: String, title: String, message: String): String {
+    fun sendNotification(userId: String, title: String, message: String) {
         val user = userRepository.findById(userId) ?: throw IllegalArgumentException("User not found")
 
         if (user.device == null) {
@@ -91,6 +98,12 @@ class UserService(
 
         val token = user.device.token
 
-        return firebaseMessagingService.sendNotificationToToken(title, message, token)
+        notificationClient.sendNotificationEventUser(
+            NotificationMessageUser(
+                token = token,
+                title = title,
+                message = message
+            )
+        )
     }
 }

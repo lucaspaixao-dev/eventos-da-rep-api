@@ -5,6 +5,7 @@ import io.github.xuenqui.eventosdarep.application.controllers.requests.EventRequ
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.services.EventService
+import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -20,10 +21,13 @@ class EventController(
 
     @Post
     fun create(eventRequest: EventRequest): HttpResponse<Map<String, String>> {
+        logger.info("Request received to create a new event, $eventRequest")
         val domain = eventRequest.toDomain()
         val uuid = eventService.create(domain)
 
-        return HttpResponse.created(mapOf("id" to uuid))
+        return HttpResponse.created(mapOf("id" to uuid)).also {
+            logger.info("Event created, $uuid")
+        }
     }
 
     @Get
@@ -46,8 +50,11 @@ class EventController(
         @PathVariable("id") id: String,
         eventRequest: EventRequest
     ): Event {
+        logger.info("Request received to update event, $eventRequest")
         val domain = eventRequest.toDomain()
-        return eventService.update(id, domain)
+        return eventService.update(id, domain).also {
+            logger.info("Event updated, $it")
+        }
     }
 
     @Put("/{eventId}/users/{userId}/accept")
@@ -55,8 +62,11 @@ class EventController(
         @PathVariable("eventId") eventId: String,
         @PathVariable("userId") userId: String,
     ): HttpResponse<Void> {
+        logger.info("Request received to join event, $eventId, $userId")
         eventService.join(eventId, userId)
-        return HttpResponse.noContent()
+        return HttpResponse.noContent<Void?>().also {
+            logger.info("User joined event, $eventId, $userId")
+        }
     }
 
     @Put("/{eventId}/users/{userId}/disavow")
@@ -64,18 +74,25 @@ class EventController(
         @PathVariable("eventId") eventId: String,
         @PathVariable("userId") userId: String,
     ): HttpResponse<Void> {
+        logger.info("Request received to remove user from event, $eventId, $userId")
         eventService.remove(eventId, userId)
-        return HttpResponse.noContent()
+        return HttpResponse.noContent<Void?>().also {
+            logger.info("User removed from event, $eventId, $userId")
+        }
     }
 
     @Post("/{id}/notification/send")
     fun sendNotification(
         @PathVariable("id") eventId: String,
         notificationRequest: CreateNotificationRequest
-    ): HttpResponse<Map<String, String>> {
-        val notificationId =
-            eventService.sendNotification(eventId, notificationRequest.title, notificationRequest.message)
+    ): HttpResponse<Void> {
+        logger.info("Request received to send notification to event, $eventId, $notificationRequest")
+        eventService.sendNotification(eventId, notificationRequest.title, notificationRequest.message)
 
-        return HttpResponse.created(mapOf("id" to notificationId))
+        return HttpResponse.noContent<Void?>().also {
+            logger.info("Notification sent to event, $eventId")
+        }
     }
+
+    companion object : LoggableClass()
 }

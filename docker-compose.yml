@@ -15,6 +15,20 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     networks:
       - app-network
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+    container_name: 'eventos-da-rep-rabbitmq-container'
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=1234
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - app-network
 
 networks:
   app-network:

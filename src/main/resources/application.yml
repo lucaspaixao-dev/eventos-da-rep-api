@@ -6,10 +6,10 @@ micronaut:
 
 datasources:
   default:
-    url: ${DATABASE_URL_2}
+    url: ${DATABASE_URL_2:jdbc:postgresql://localhost:5432/eventos_da_rep_db}
     driverClassName: org.postgresql.Driver
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USER:eventos_da_rep_admin}
+    password: ${DATABASE_PASSWORD:1234}
     schema-generate: CREATE
     dialect: POSTGRES
 
@@ -20,3 +20,9 @@ netty:
 
 server:
   port: ${PORT:8080}
+
+rabbitmq:
+  username: ${RABBITMQ_USERNAME:admin}
+  password: ${RABBITMQ_PASSWORD:1234}
+  host: ${RABBITMQ_HOST:localhost}
+  port: ${RABBITMQ_PORT:5672}

@@ -5,6 +5,7 @@ import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceReq
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.domain.services.UserService
+import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.created
 import io.micronaut.http.annotation.Controller
@@ -21,10 +22,14 @@ class UserController(
 
     @Post
     fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
+        logger.info("Request received to create a new user $userRequest")
+
         val domain = userRequest.toDomain()
         val uuid = userService.create(domain)
 
-        return created(mapOf("id" to uuid))
+        return created(mapOf("id" to uuid)).also {
+            logger.info("User created with id $uuid")
+        }
     }
 
     @Get
@@ -38,6 +43,7 @@ class UserController(
         @PathVariable("id") id: String,
         userRequest: UserRequest
     ): HttpResponse<Nothing> {
+        logger.info("Request received to update user with id $id, $userRequest")
         userService.update(id, userRequest.toDomain())
         return HttpResponse.noContent()
     }
@@ -47,6 +53,7 @@ class UserController(
         @PathVariable("userId") userId: String,
         deviceRequest: DeviceRequest
     ): HttpResponse<Nothing> {
+        logger.info("Request received to update device for user with id $userId, $deviceRequest")
         val domain = deviceRequest.toDomain()
         userService.updateDevice(userId, domain)
         return HttpResponse.noContent()
@@ -56,10 +63,14 @@ class UserController(
     fun sendNotification(
         @PathVariable("userId") userId: String,
         notificationRequest: CreateNotificationRequest
-    ): HttpResponse<Map<String, String>> {
-        val notificationId =
-            userService.sendNotification(userId, notificationRequest.title, notificationRequest.message)
+    ): HttpResponse<Void> {
+        logger.info("Request received to send notification for user with id $userId, $notificationRequest")
+        userService.sendNotification(userId, notificationRequest.title, notificationRequest.message)
 
-        return created(mapOf("id" to notificationId))
+        return HttpResponse.noContent<Void?>().also {
+            logger.info("Notification sent to user $userId")
+        }
     }
+
+    companion object : LoggableClass()
 }

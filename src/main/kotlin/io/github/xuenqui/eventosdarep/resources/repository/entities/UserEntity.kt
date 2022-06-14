@@ -1,4 +1,4 @@
-package io.github.xuenqui.eventosdarep.repository.entities
+package io.github.xuenqui.eventosdarep.resources.repository.entities
 
 import io.github.xuenqui.eventosdarep.domain.User
 import io.micronaut.core.annotation.Nullable
