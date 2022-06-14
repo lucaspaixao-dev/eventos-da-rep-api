@@ -5,7 +5,6 @@ import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isGreaterThan
-import org.valiktor.functions.isNegativeOrZero
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
 import org.valiktor.i18n.mapToMessage
