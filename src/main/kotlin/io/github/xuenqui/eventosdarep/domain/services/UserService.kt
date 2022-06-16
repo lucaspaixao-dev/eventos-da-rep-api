@@ -23,7 +23,7 @@ class UserService(
 
         val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.create(user)
 
-        notificationClient.sendUnsubscriptionOnTopicEvent(
+        notificationClient.sendSubscriptionOnTopicEvent(
             TopicMessage(
                 topic = "users-topic",
                 token = user.device!!.token
@@ -35,7 +35,10 @@ class UserService(
 
     fun findAll(page: Int, size: Int): List<User> = userRepository.findAll(page, size)
 
-    fun findById(id: String): User? = userRepository.findById(id)
+    fun findById(id: String): User = userRepository.findById(id) ?: throw ResourceNotFoundException("User not found")
+
+    fun findByEmail(email: String): User = userRepository.findByEmail(email)
+        ?: throw ResourceNotFoundException("User not found")
 
     fun update(userId: String, user: User) {
         val foundUser = getUserOrThrowAnException(userId)
@@ -51,7 +54,6 @@ class UserService(
                 model = user.device.model,
                 createdAt = user.device.createdAt
             ),
-            authenticationId = user.authenticationId,
             isAdmin = user.isAdmin,
             photo = user.photo,
             createdAt = user.createdAt,
@@ -63,27 +65,28 @@ class UserService(
     fun updateDevice(userId: String, device: Device) {
         val foundUser = getUserOrThrowAnException(userId)
 
-        val newUser = if (foundUser.device != null) {
-            foundUser.copy(
-                device = device.copy(
-                    token = device.token,
-                    brand = device.brand,
-                    model = device.model,
-                    createdAt = device.createdAt
-                )
+        val newDevice = if (foundUser.device != null) {
+            device.copy(
+                id = foundUser.device.id,
+                token = device.token,
+                brand = device.brand,
+                model = device.model,
+                createdAt = device.createdAt,
+                updatedAt = LocalDateTime.now()
             )
         } else {
-            foundUser.copy(
-                device = Device(
-                    id = UUID.randomUUID().toString(),
-                    token = device.token,
-                    brand = device.brand,
-                    model = device.model,
-                    createdAt = LocalDateTime.now()
-                )
+            Device(
+                id = UUID.randomUUID().toString(),
+                token = device.token,
+                brand = device.brand,
+                model = device.model,
+                createdAt = LocalDateTime.now()
             )
         }
 
+        val newUser = foundUser.copy(
+            device = newDevice
+        )
         userRepository.update(newUser)
     }
 
@@ -107,6 +110,7 @@ class UserService(
 
     private fun getUserOrThrowAnException(userId: String) =
         userRepository.findById(userId) ?: throw ResourceNotFoundException("User not found")
+
     private fun validateDevice(user: User) {
         if (user.device == null) {
             throw ValidationException("Device is required")

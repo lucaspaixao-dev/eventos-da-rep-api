@@ -81,8 +81,8 @@ open class UserRepository(
     fun update(user: User): User =
         try {
             val deviceEntity = DeviceEntity(
-                id = UUID.randomUUID().toString(),
-                device = user.device!!,
+                id = user.device!!.id!!,
+                device = user.device,
                 createdAt = user.device.createdAt ?: LocalDateTime.now(),
                 updatedAt = user.device.updatedAt ?: LocalDateTime.now()
             )
@@ -114,7 +114,6 @@ fun UserEntity.toDomain() = User(
     email = this.email,
     photo = this.photo,
     isAdmin = this.isAdmin,
-    authenticationId = this.authenticationId,
     createdAt = this.createdAt,
     updatedAt = this.updatedAt,
     device = this.device?.toDomain()

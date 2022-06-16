@@ -18,7 +18,7 @@ fun UserRequest.validateRequest() {
             validate(UserRequest::name).hasSize(min = 3, max = 50)
             validate(UserRequest::email).isNotBlank()
             validate(UserRequest::email).hasSize(min = 3, max = 100)
-            validate(UserRequest::authenticationId).isNotBlank()
+            validate(UserRequest::photo).isNotBlank()
             validate(UserRequest::device).validate {
                 validate(DeviceRequest::token).isNotBlank()
                 validate(DeviceRequest::brand).isNotBlank()

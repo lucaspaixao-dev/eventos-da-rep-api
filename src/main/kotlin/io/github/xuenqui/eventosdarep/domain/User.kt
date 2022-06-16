@@ -6,7 +6,6 @@ data class User(
     val id: String? = null,
     val name: String,
     val email: String,
-    val authenticationId: String,
     val isAdmin: Boolean,
     val photo: String,
     val createdAt: LocalDateTime? = LocalDateTime.now(),

@@ -14,7 +14,6 @@ data class UserEntity(
     @field:Id val id: String? = null,
     @field:NotNull val name: String,
     @field:NotNull @field:Index(name = "user_email_index", unique = true, columns = ["email"]) val email: String,
-    @field:NotNull val authenticationId: String,
     @field:NotNull val isAdmin: Boolean,
     @field:NotNull val photo: String,
     @field:NotNull @field:Index(
@@ -34,7 +33,6 @@ data class UserEntity(
         id = id,
         name = user.name,
         email = user.email,
-        authenticationId = user.authenticationId,
         isAdmin = user.isAdmin,
         photo = user.photo,
         createdAt = createdAt,
@@ -52,7 +50,6 @@ data class UserEntity(
         id = id,
         name = user.name,
         email = user.email,
-        authenticationId = user.authenticationId,
         isAdmin = user.isAdmin,
         photo = user.photo,
         createdAt = createdAt,

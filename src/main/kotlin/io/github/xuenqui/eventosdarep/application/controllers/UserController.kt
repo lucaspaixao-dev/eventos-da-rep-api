@@ -40,6 +40,11 @@ class UserController(
         @QueryValue(value = "size", defaultValue = "20") size: String,
     ) = userService.findAll(page.toInt(), size.toInt())
 
+    @Get("/email/{email}")
+    fun findByEmail(
+        @PathVariable("email") email: String
+    ) = userService.findByEmail(email)
+
     @Put("/{id}")
     fun update(
         @PathVariable("id") id: String,
