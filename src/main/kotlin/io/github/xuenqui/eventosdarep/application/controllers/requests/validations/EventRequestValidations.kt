@@ -11,6 +11,7 @@ import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
 import java.time.LocalDateTime
 import java.util.Locale
+import org.valiktor.functions.isLessThan
 
 fun EventRequest.validateRequest() {
     try {
@@ -18,9 +19,9 @@ fun EventRequest.validateRequest() {
             validate(EventRequest::title).isNotBlank()
             validate(EventRequest::title).hasSize(min = 5, max = 30)
             validate(EventRequest::description).isNotBlank()
-            validate(EventRequest::description).hasSize(min = 5, max = 255)
-            validate(EventRequest::latitude).isGreaterThan(0.0)
-            validate(EventRequest::longitude).isGreaterThan(0.0)
+            validate(EventRequest::description).hasSize(min = 5)
+            validate(EventRequest::latitude).isLessThan(0.0)
+            validate(EventRequest::longitude).isLessThan(0.0)
             validate(EventRequest::address).isNotBlank()
             validate(EventRequest::address).hasSize(min = 5, max = 100)
             validate(EventRequest::city).isNotBlank()
