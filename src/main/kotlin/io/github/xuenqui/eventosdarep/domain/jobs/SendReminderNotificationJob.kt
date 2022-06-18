@@ -48,7 +48,7 @@ class SendReminderNotificationJob(
         if (tomorrowEvents.isNotEmpty()) {
             tomorrowEvents.forEach {
                 val title = "FALTA UM DIA PARA O EVENTO ${it.title} 🥳"
-                val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO AMANHA ÁS ${buildTime(it.begin)}? " +
+                val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO AMANHÃ ÁS ${buildTime(it.begin)}? " +
                     "BORA SE DIVERTIR! 🤩"
                 val topic = it.id!!
                 val notification = NotificationMessageTopic(
