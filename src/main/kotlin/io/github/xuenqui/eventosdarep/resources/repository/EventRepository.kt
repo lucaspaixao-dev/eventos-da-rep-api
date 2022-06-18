@@ -28,6 +28,15 @@ open class EventRepository(
             throw RepositoryException("error finding all events", e)
         }
 
+    fun findALlWithoutPage(): List<Event> =
+        try {
+            logger.info("finding all events")
+
+            postgresEventRepository.findAll().map { it.toDomain() }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding all events", e)
+        }
+
     fun findByTitle(title: String): Event? =
         try {
             logger.info("finding event by title: $title")
@@ -100,6 +109,17 @@ open class EventRepository(
             postgresEventRepository.exitEvent(eventId, userId)
         } catch (e: Exception) {
             throw RepositoryException("error exiting event", e)
+        }
+    }
+
+    fun deleteInBatch(events: List<Event>) {
+        try {
+            logger.info("deleting events in batch")
+
+            val entities = events.map { EventEntity(it.id!!, it, it.createdAt, LocalDateTime.now()) }
+            postgresEventRepository.deleteAll(entities)
+        } catch (e: Exception) {
+            throw RepositoryException("error deleting events in batch", e)
         }
     }
 
