@@ -2,16 +2,16 @@ package io.github.xuenqui.eventosdarep.application.controllers.requests.validati
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.EventRequest
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
+import java.time.LocalDateTime
+import java.util.Locale
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isGreaterThan
+import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
 import org.valiktor.functions.isNotNull
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
-import java.time.LocalDateTime
-import java.util.Locale
-import org.valiktor.functions.isLessThan
 
 fun EventRequest.validateRequest() {
     try {

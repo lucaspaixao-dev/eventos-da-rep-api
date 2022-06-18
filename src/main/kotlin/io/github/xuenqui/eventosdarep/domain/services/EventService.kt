@@ -5,6 +5,7 @@ import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
+import io.github.xuenqui.eventosdarep.resources.firebase.FirebaseMessagingService
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
@@ -16,7 +17,8 @@ import jakarta.inject.Singleton
 class EventService(
     private val eventRepository: EventRepository,
     private val userService: UserService,
-    private val notificationClient: NotificationClient
+    private val notificationClient: NotificationClient,
+    private val firebaseMessagingService: FirebaseMessagingService
 ) {
 
     fun create(event: Event): String {
@@ -125,12 +127,10 @@ class EventService(
         val title = "${user.name} confirmou presença! 🎉"
         val message = "${user.name} confirmou presença no evento ${event.title}!"
 
-        notificationClient.sendNotificationEventToken(
-            NotificationMessageTopic(
-                topic = event.id!!,
-                message = message,
-                title = title
-            )
+        firebaseMessagingService.sendNotificationToTopic(
+            title = title,
+            body = message,
+            topic = event.id!!
         )
     }
 

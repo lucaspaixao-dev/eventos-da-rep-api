@@ -18,3 +18,5 @@ class ResourceNotFoundException(message: String) : ApiException(message, HttpSta
 
 class RepositoryException(message: String, throwable: Throwable) :
     ApiException(message, HttpStatus.INTERNAL_SERVER_ERROR, throwable = throwable)
+
+class UserNotInvitedException(message: String) : ApiException(message, HttpStatus.FORBIDDEN)

@@ -3,6 +3,7 @@ package io.github.xuenqui.eventosdarep.domain.services
 import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
+import io.github.xuenqui.eventosdarep.domain.exceptions.UserNotInvitedException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
@@ -15,13 +16,14 @@ import java.util.UUID
 @Singleton
 class UserService(
     private val userRepository: UserRepository,
-    private val notificationClient: NotificationClient
+    private val notificationClient: NotificationClient,
+    private val invitationService: InvitationService
 ) {
 
     fun create(user: User): String {
         validateDevice(user)
 
-        val userId = userRepository.findByEmail(user.email)?.id ?: userRepository.create(user)
+        val userId = userRepository.findByEmail(user.email)?.id ?: validateInviteAndCreateUser(user)
 
         notificationClient.sendSubscriptionOnTopicEvent(
             TopicMessage(
@@ -115,5 +117,15 @@ class UserService(
         if (user.device == null) {
             throw ValidationException("Device is required")
         }
+    }
+
+    private fun validateInviteAndCreateUser(user: User): String {
+        val invitation =
+            invitationService.findByEmail(user.email) ?: throw UserNotInvitedException("the user is not invited")
+
+        val userId = userRepository.create(user)
+
+        invitationService.delete(invitation.email)
+        return userId
     }
 }

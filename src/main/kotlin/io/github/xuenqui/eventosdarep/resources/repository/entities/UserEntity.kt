@@ -18,7 +18,6 @@ data class UserEntity(
     @field:NotNull val photo: String,
     @field:NotNull @field:Index(
         name = "user_created_at_index",
-        unique = true,
         columns = ["created_at"]
     ) val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null,

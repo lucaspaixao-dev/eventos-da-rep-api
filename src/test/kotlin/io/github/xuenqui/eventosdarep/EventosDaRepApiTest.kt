@@ -1,13 +1,13 @@
-//package io.github.xuenqui.eventosdarep
+// package io.github.xuenqui.eventosdarep
 //
-//import io.micronaut.runtime.EmbeddedApplication
-//import io.micronaut.test.extensions.junit5.annotation.MicronautTest
-//import jakarta.inject.Inject
-//import org.junit.jupiter.api.Assertions
-//import org.junit.jupiter.api.Test
+// import io.micronaut.runtime.EmbeddedApplication
+// import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+// import jakarta.inject.Inject
+// import org.junit.jupiter.api.Assertions
+// import org.junit.jupiter.api.Test
 //
-//@MicronautTest
-//class EventosDaRepApiTest {
+// @MicronautTest
+// class EventosDaRepApiTest {
 //
 //    @Inject
 //    lateinit var application: EmbeddedApplication<*>
@@ -16,4 +16,4 @@
 //    fun testItWorks() {
 //        Assertions.assertTrue(application.isRunning)
 //    }
-//}
+// }
