@@ -22,6 +22,9 @@ class DeleteExpiredEventsJob(
             it.date.isBefore(date)
         }.toList()
 
+        expiredEvents.forEach {
+            eventRepository.removeEventOnUsersEvents(it.id!!)
+        }
         eventRepository.deleteInBatch(expiredEvents)
     }
 
