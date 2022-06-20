@@ -1,6 +1,8 @@
 micronaut:
   application:
     name: eventos-da-rep-api
+    cors:
+      enabled: true
   server:
     port: ${PORT:8080}
 
