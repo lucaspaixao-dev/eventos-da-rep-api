@@ -1,10 +1,6 @@
 micronaut:
   application:
     name: eventos-da-rep-api
-      configurations:
-        web:
-          allowedOrigins:
-            - https://eventos-da-rep-admin.herokuapp.com
   server:
     port: ${PORT:8080}
     cors:
