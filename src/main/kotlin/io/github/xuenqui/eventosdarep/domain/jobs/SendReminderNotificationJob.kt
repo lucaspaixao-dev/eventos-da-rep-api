@@ -1,5 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain.jobs
 
+import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
@@ -17,6 +18,8 @@ class SendReminderNotificationJob(
 
     @Scheduled(cron = "0 9 * * *")
     fun execute() {
+        logger.info("Running events reminder job")
+
         val now = LocalDateTime.now()
             .withHour(0)
             .withMinute(0)
@@ -56,6 +59,8 @@ class SendReminderNotificationJob(
                     message = body,
                     topic = topic
                 )
+
+                logger.info("sending notirication to topic $topic with the title $title and message $body")
                 notificationClient.sendNotificationEventToken(notification)
             }
         }
@@ -70,9 +75,13 @@ class SendReminderNotificationJob(
                     message = body,
                     topic = topic
                 )
+
+                logger.info("sending notirication to topic $topic with the title $title and message $body")
                 notificationClient.sendNotificationEventToken(notification)
             }
         }
+
+        logger.info("Finishing the event reminder job")
     }
 
     private fun buildTime(begin: LocalTime): String {
@@ -84,4 +93,6 @@ class SendReminderNotificationJob(
         val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return date.format(dtf)
     }
+
+    companion object : LoggableClass()
 }
