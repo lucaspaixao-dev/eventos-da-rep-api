@@ -1,3 +1,6 @@
 rabbitmq:
   uri: ${CLOUDAMQP_URL}
   port: ${RABBITMQ_PORT:5672}
+
+firebase:
+  path: classpath:firebase.json

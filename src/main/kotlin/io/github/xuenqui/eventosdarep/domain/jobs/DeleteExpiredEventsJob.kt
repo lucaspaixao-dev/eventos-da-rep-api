@@ -15,17 +15,17 @@ class DeleteExpiredEventsJob(
     fun execute() {
         logger.info("deleting expired events")
 
-        val events = eventRepository.findALlWithoutPage()
-        val date = LocalDateTime.now().minusDays(1)
-
-        val expiredEvents = events.filter {
-            it.date.isBefore(date)
-        }.toList()
-
-        expiredEvents.forEach {
-            eventRepository.removeEventOnUsersEvents(it.id!!)
-        }
-        eventRepository.deleteInBatch(expiredEvents)
+//        val events = eventRepository.findALlWithoutPage()
+//        val date = LocalDateTime.now().minusDays(1)
+//
+//        val expiredEvents = events.filter {
+//            it.date.isBefore(date)
+//        }.toList()
+//
+//        expiredEvents.forEach {
+//            eventRepository.removeEventOnUsersEvents(it.id!!)
+//        }
+//        eventRepository.deleteInBatch(expiredEvents)
     }
 
     companion object : LoggableClass()

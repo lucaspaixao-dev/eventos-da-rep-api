@@ -5,19 +5,22 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import io.micronaut.context.annotation.Bean
+import io.micronaut.context.annotation.ConfigurationProperties
 import io.micronaut.context.annotation.Factory
 import io.micronaut.core.io.ResourceResolver
 import io.micronaut.core.io.scan.ClassPathResourceLoader
 import jakarta.inject.Singleton
 
 @Factory
-class FirebaseFactory {
+class FirebaseFactory(
+    private val firebaseProperty: FirebaseProperty
+) {
 
     @Bean
     @Singleton
     fun firebaseMessaging(): FirebaseMessaging {
         val loader: ClassPathResourceLoader = ResourceResolver().getLoader(ClassPathResourceLoader::class.java).get()
-        val resource = loader.getResource("classpath:firebase.json")
+        val resource = loader.getResource(firebaseProperty.path)
         val googleCredentials = GoogleCredentials
             .fromStream(resource.get().openStream())
 
@@ -29,4 +32,9 @@ class FirebaseFactory {
         val app = FirebaseApp.initializeApp(firebaseOptions, "eventos-da-rep")
         return FirebaseMessaging.getInstance(app)
     }
+}
+
+@ConfigurationProperties("firebase")
+class FirebaseProperty {
+    var path: String? = null
 }
