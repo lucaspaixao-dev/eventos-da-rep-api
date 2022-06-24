@@ -16,6 +16,9 @@ interface PostgresUserRepository : PageableRepository<UserEntity, String> {
     override fun findAll(pageable: Pageable): Page<UserEntity>
 
     @Join(value = "device", type = Join.Type.LEFT_FETCH)
+    override fun findAll(): Iterable<UserEntity>
+
+    @Join(value = "device", type = Join.Type.LEFT_FETCH)
     override fun findById(id: String): Optional<UserEntity>
 
     @Join(value = "device", type = Join.Type.LEFT_FETCH)
