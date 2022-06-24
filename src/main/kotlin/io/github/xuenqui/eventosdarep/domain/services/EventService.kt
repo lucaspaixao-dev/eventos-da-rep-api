@@ -11,6 +11,8 @@ import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Singleton
 @SuppressWarnings("TooManyFunctions")
@@ -35,7 +37,7 @@ class EventService(
     fun findAll(page: Int, size: Int): List<Event> = eventRepository.findAll(page, size)
 
     fun findActiveEvents(page: Int, size: Int): List<Event> =
-        eventRepository.findByActive(true, page, size)
+        eventRepository.findByActive(true, page, size).filter { it.date >= LocalDateTime.now() }.toList()
 
     fun update(eventId: String, event: Event): Event {
         val existsEvent = eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")

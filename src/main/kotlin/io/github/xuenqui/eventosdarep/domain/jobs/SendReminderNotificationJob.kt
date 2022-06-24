@@ -31,7 +31,7 @@ class SendReminderNotificationJob(
         val oneWeek = now.plusWeeks(1)
 
         val tomorrowEvents = events.filter {
-            it.date.plusDays(1)
+            it.date
                 .withHour(0)
                 .withMinute(0)
                 .withSecond(0)
@@ -40,7 +40,7 @@ class SendReminderNotificationJob(
         }.toList()
 
         val oneWeekEvents = events.filter {
-            it.date.plusWeeks(1)
+            it.date
                 .withHour(0)
                 .withMinute(0)
                 .withSecond(0)

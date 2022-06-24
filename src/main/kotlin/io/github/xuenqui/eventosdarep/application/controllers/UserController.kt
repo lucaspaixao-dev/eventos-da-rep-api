@@ -5,6 +5,7 @@ import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceReq
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
+import io.github.xuenqui.eventosdarep.domain.jobs.SendReminderNotificationJob
 import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
@@ -18,7 +19,8 @@ import io.micronaut.http.annotation.QueryValue
 
 @Controller("/users")
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
+    private val sendReminderNotificationJob: SendReminderNotificationJob
 ) {
 
     @Post
@@ -79,6 +81,11 @@ class UserController(
         return HttpResponse.noContent<Void?>().also {
             logger.info("Notification sent to user $userId")
         }
+    }
+
+    @Get("/reminder")
+    fun test() {
+        sendReminderNotificationJob.execute()
     }
 
     companion object : LoggableClass()
