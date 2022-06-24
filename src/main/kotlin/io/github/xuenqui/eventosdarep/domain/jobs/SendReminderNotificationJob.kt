@@ -1,8 +1,9 @@
 package io.github.xuenqui.eventosdarep.domain.jobs
 
+import io.github.xuenqui.eventosdarep.domain.Event
+import io.github.xuenqui.eventosdarep.domain.services.NotificationService
+import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.micronaut.scheduling.annotation.Scheduled
 import jakarta.inject.Singleton
@@ -13,7 +14,8 @@ import java.time.format.DateTimeFormatter
 @Singleton
 class SendReminderNotificationJob(
     private val eventRepository: EventRepository,
-    private val notificationClient: NotificationClient
+    private val userService: UserService,
+    private val notificationService: NotificationService
 ) {
 
     @Scheduled(cron = "0 9 * * *")
@@ -53,15 +55,9 @@ class SendReminderNotificationJob(
                 val title = "FALTA UM DIA PARA O EVENTO ${it.title} 🥳"
                 val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO AMANHÃ ÁS ${buildTime(it.begin)}? " +
                     "BORA SE DIVERTIR! 🤩"
-                val topic = it.id!!
-                val notification = NotificationMessageTopic(
-                    title = title,
-                    message = body,
-                    topic = topic
-                )
 
-                logger.info("sending notirication to topic $topic with the title $title and message $body")
-                notificationClient.sendNotificationEventToken(notification)
+                val tokens = getUserTokens(it)
+                notificationService.sendNotificationToTokens(title, body, tokens)
             }
         }
 
@@ -69,15 +65,8 @@ class SendReminderNotificationJob(
             oneWeekEvents.forEach {
                 val title = "FALTA UMA SEMANA PARA O EVENTO ${it.title} 😍"
                 val body = "E AI, ESTÁ ANCIOSO TAMBÉM PARA O EVENTO DA REP EM ${buildDate(it.date)}? 🤩"
-                val topic = it.id!!
-                val notification = NotificationMessageTopic(
-                    title = title,
-                    message = body,
-                    topic = topic
-                )
-
-                logger.info("sending notirication to topic $topic with the title $title and message $body")
-                notificationClient.sendNotificationEventToken(notification)
+                val tokens = getUserTokens(it)
+                notificationService.sendNotificationToTokens(title, body, tokens)
             }
         }
 
@@ -92,6 +81,16 @@ class SendReminderNotificationJob(
     private fun buildDate(date: LocalDateTime): String {
         val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return date.format(dtf)
+    }
+
+    private fun getUserTokens(event: Event): MutableList<String> {
+        val tokens = mutableListOf<String>()
+        event.users.forEach {
+            userService.findById(it.id!!).device?.run {
+                tokens.add(this.token)
+            }
+        }
+        return tokens
     }
 
     companion object : LoggableClass()

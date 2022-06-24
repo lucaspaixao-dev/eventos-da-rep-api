@@ -1,6 +1,7 @@
 package io.github.xuenqui.eventosdarep.resources.repository
 
 import io.github.xuenqui.eventosdarep.domain.Device
+import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
@@ -27,6 +28,15 @@ open class UserRepository(
             logger.info("finding all users")
 
             postgresUserRepository.findAll(pageable).map { it.toDomain() }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding all users", e)
+        }
+
+    fun findAllWithoutPage(): List<User> =
+        try {
+            logger.info("finding all users without page")
+
+            postgresUserRepository.findAll().map { it.toDomain() }.toList()
         } catch (e: Exception) {
             throw RepositoryException("error finding all users", e)
         }

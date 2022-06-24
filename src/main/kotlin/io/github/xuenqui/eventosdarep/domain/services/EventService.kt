@@ -5,13 +5,8 @@ import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
-import io.github.xuenqui.eventosdarep.resources.firebase.FirebaseMessagingService
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageTopic
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Singleton
@@ -19,8 +14,7 @@ import java.time.LocalDateTime
 class EventService(
     private val eventRepository: EventRepository,
     private val userService: UserService,
-    private val notificationClient: NotificationClient,
-    private val firebaseMessagingService: FirebaseMessagingService
+    private val notificationService: NotificationService
 ) {
 
     fun create(event: Event): String {
@@ -32,25 +26,31 @@ class EventService(
         }
     }
 
-    fun findById(id: String): Event? = eventRepository.findById(id)
+    fun findById(id: String): Event = getEventOrThrowAnException(id)
 
     fun findAll(page: Int, size: Int): List<Event> = eventRepository.findAll(page, size)
 
     fun findActiveEvents(page: Int, size: Int): List<Event> =
-        eventRepository.findByActive(true, page, size).filter { it.date >= LocalDateTime.now() }.toList()
+        eventRepository.findByActive(true, page, size)
+            .filter {
+                val time = LocalDateTime.now()
+                    .withHour(it.end.hour)
+                    .withMinute(it.end.minute)
+                    .withSecond(it.end.second)
+                time >= it.date
+            }.toList()
 
     fun update(eventId: String, event: Event): Event {
-        val existsEvent = eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
+        val existsEvent = getEventOrThrowAnException(eventId)
 
         val newEvent = event.copy(
-            id = eventId,
+            id = existsEvent.id!!,
             users = existsEvent.users,
             createdAt = existsEvent.createdAt,
-            updatedAt = existsEvent.updatedAt
+            updatedAt = LocalDateTime.now()
         )
 
-        eventRepository.update(eventId, newEvent)
-        return event
+        return eventRepository.update(eventId, newEvent)
     }
 
     fun join(eventId: String, userId: String) {
@@ -58,24 +58,13 @@ class EventService(
         val user = getUserOrThrowAnException(userId)
         getDeviceOrThrowAnException(user)
 
-        var isGoing = false
-
-        event.users.forEach {
-            if (it.id == userId) {
-                isGoing = true
-            }
+        val isGoing = event.users.any {
+            it.id == userId
         }
 
         if (!isGoing) {
             eventRepository.joinEvent(eventId, userId)
-
             sendNotificationToUsersOnEvent(user, event)
-            notificationClient.sendSubscriptionOnTopicEvent(
-                TopicMessage(
-                    topic = eventId,
-                    token = user.device!!.token
-                )
-            )
         }
     }
 
@@ -88,56 +77,50 @@ class EventService(
             it.id == user.id
         }?.let {
             eventRepository.exitEvent(eventId, it.id!!)
-
-            notificationClient.sendUnsubscriptionOnTopicEvent(
-                TopicMessage(
-                    topic = eventId,
-                    token = user.device!!.token
-                )
-            )
         }
     }
 
     fun sendNotification(eventId: String, title: String, message: String) {
-        val event = eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
-
+        val event = getEventOrThrowAnException(eventId)
         val newTitle = "${event.title}: $title"
+        val tokens = getUsersToken(event)
 
-        notificationClient.sendNotificationEventToken(
-            NotificationMessageTopic(
-                topic = eventId,
-                message = message,
-                title = newTitle
-            )
-        )
+        notificationService.sendNotificationToTokens(newTitle, message, tokens)
     }
 
     private fun sendNotificationNewEvent(event: Event) {
+        val tokens = mutableListOf<String>()
         val title = "${event.title} disponível! 🤩"
         val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
 
-        notificationClient.sendNotificationEventToken(
-            NotificationMessageTopic(
-                topic = "users-topic",
-                message = message,
-                title = title
-            )
-        )
+        userService.findAllWithoutPage().forEach { user ->
+            if (user.device != null) {
+                tokens.add(user.device.token)
+            }
+        }
+
+        notificationService.sendNotificationToTokens(title, message, tokens)
     }
 
     private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
+        val tokens = getUsersToken(event)
         val title = "${user.name} confirmou presença! 🎉"
         val message = "${user.name} confirmou presença no evento ${event.title}!"
 
-        firebaseMessagingService.sendNotificationToTopic(
-            title = title,
-            body = message,
-            topic = event.id!!
-        )
+        notificationService.sendNotificationToTokens(title, message, tokens)
     }
 
-    private fun getUserOrThrowAnException(userId: String) =
-        userService.findById(userId) ?: throw ResourceNotFoundException("User not found")
+    private fun getUsersToken(event: Event): MutableList<String> {
+        val tokens = mutableListOf<String>()
+        event.users.forEach {
+            userService.findById(it.id!!).device?.run {
+                tokens.add(this.token)
+            }
+        }
+        return tokens
+    }
+
+    private fun getUserOrThrowAnException(userId: String) = userService.findById(userId)
 
     private fun getEventOrThrowAnException(eventId: String) =
         eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")

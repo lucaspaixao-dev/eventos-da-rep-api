@@ -46,6 +46,8 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
+    testImplementation("io.mockk:mockk:1.12.4")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:testcontainers")
 }

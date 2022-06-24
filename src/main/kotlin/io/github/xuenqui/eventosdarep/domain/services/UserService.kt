@@ -5,37 +5,28 @@ import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.UserNotInvitedException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.TopicMessage
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import io.github.xuenqui.eventosdarep.resources.repository.UserRepository
 import jakarta.inject.Singleton
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Singleton
+@SuppressWarnings("TooManyFunctions")
 class UserService(
     private val userRepository: UserRepository,
-    private val notificationClient: NotificationClient,
+    private val notificationService: NotificationService,
     private val invitationService: InvitationService
 ) {
 
     fun create(user: User): String {
         validateDevice(user)
 
-        val userId = userRepository.findByEmail(user.email)?.id ?: validateInviteAndCreateUser(user)
-
-        notificationClient.sendSubscriptionOnTopicEvent(
-            TopicMessage(
-                topic = "users-topic",
-                token = user.device!!.token
-            )
-        )
-
-        return userId
+        return userRepository.findByEmail(user.email)?.id ?: validateInviteAndCreateUser(user)
     }
 
     fun findAll(page: Int, size: Int): List<User> = userRepository.findAll(page, size)
+
+    fun findAllWithoutPage(): List<User> = userRepository.findAllWithoutPage()
 
     fun findById(id: String): User = userRepository.findById(id) ?: throw ResourceNotFoundException("User not found")
 
@@ -100,14 +91,7 @@ class UserService(
         }
 
         val token = user.device.token
-
-        notificationClient.sendNotificationEventUser(
-            NotificationMessageUser(
-                token = token,
-                title = title,
-                message = message
-            )
-        )
+        notificationService.sendNotificationToTokens(title, message, listOf(token))
     }
 
     private fun getUserOrThrowAnException(userId: String) =

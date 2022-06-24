@@ -87,7 +87,7 @@ open class EventRepository(
 
             logger.info("updating the event $event")
 
-            postgresEventRepository.update(eventEntity)
+            postgresEventRepository.update(eventEntity).toDomain()
         } catch (e: Exception) {
             throw RepositoryException("error updating event", e)
         }
@@ -123,7 +123,7 @@ open class EventRepository(
         }
     }
 
-    fun removeEventOnUsersEvents(eventId : String) {
+    fun removeEventOnUsersEvents(eventId: String) {
         try {
             logger.info("removing event $eventId from users events")
 

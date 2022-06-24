@@ -46,7 +46,7 @@ class EventController(
     ): List<Event> = eventService.findActiveEvents(page.toInt(), size.toInt())
 
     @Get("/{id}")
-    fun getById(@PathVariable("id") id: String): Event? = eventService.findById(id)
+    fun getById(@PathVariable("id") id: String): Event = eventService.findById(id)
 
     @Put("/{id}")
     fun update(
