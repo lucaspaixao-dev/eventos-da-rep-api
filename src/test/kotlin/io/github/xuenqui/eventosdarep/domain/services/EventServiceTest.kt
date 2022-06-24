@@ -136,7 +136,7 @@ class EventServiceTest {
 
     @Test
     fun `should return all the events actives when there is an event bigger than now`() {
-        val eventMock = buildEventMock().copy(end = LocalTime.now().plusMinutes(1))
+        val eventMock = buildEventMock().copy(end = LocalTime.now().plusMinutes(10))
         val page = 0
         val size = 20
 
@@ -163,23 +163,6 @@ class EventServiceTest {
 
         assertThat(result).isNotNull()
         assertThat(result).isEmpty()
-
-        verify(exactly = 1) { eventRepository.findByActive(true, page, size) }
-    }
-
-    @Test
-    fun `should return all the events actives when there is an event equal than now`() {
-        val eventMock = buildEventMock()
-        val page = 0
-        val size = 20
-
-        every { eventRepository.findByActive(true, page, size) } returns listOf(eventMock)
-
-        val result = assertDoesNotThrow { eventService.findActiveEvents(page, size) }
-
-        assertThat(result).isNotNull()
-        assertThat(result).isNotEmpty()
-        assertThat(result.first().id!!).isEqualTo(eventMock.id!!)
 
         verify(exactly = 1) { eventRepository.findByActive(true, page, size) }
     }

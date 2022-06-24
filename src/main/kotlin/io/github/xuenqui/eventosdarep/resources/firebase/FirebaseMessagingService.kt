@@ -7,6 +7,7 @@ import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import jakarta.inject.Singleton
 
 @Singleton
+@SuppressWarnings("TooGenericExceptionCaught")
 class FirebaseMessagingService(
     private val firebaseMessaging: FirebaseMessaging
 ) {
@@ -18,15 +19,19 @@ class FirebaseMessagingService(
             .build()
 
         tokens.forEach { token ->
-            val message = Message.builder()
-                .setToken(token)
-                .setNotification(notification)
-                .build()
+            try {
+                val message = Message.builder()
+                    .setToken(token)
+                    .setNotification(notification)
+                    .build()
 
-            logger.info("Sending notification to user $token with the title $title and body $body")
+                logger.info("Sending notification to user $token with the title $title and body $body")
 
-            firebaseMessaging.send(message).also {
-                logger.info("Notification sent: $it")
+                firebaseMessaging.send(message).also {
+                    logger.info("Notification sent: $it")
+                }
+            } catch (e: Exception) {
+                logger.error("Error to send notification $e")
             }
         }
     }

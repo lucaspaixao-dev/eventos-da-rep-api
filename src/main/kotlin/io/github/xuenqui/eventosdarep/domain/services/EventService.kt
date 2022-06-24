@@ -33,11 +33,14 @@ class EventService(
     fun findActiveEvents(page: Int, size: Int): List<Event> =
         eventRepository.findByActive(true, page, size)
             .filter {
-                val time = LocalDateTime.now()
+                val eventTime = it.date
                     .withHour(it.end.hour)
                     .withMinute(it.end.minute)
                     .withSecond(it.end.second)
-                time >= it.date
+
+                val currentTime = LocalDateTime.now()
+
+                eventTime >= currentTime
             }.toList()
 
     fun update(eventId: String, event: Event): Event {
