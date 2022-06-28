@@ -2,6 +2,7 @@ package io.github.xuenqui.eventosdarep.resources.firebase
 
 import com.google.firebase.messaging.AndroidConfig
 import com.google.firebase.messaging.ApnsConfig
+import com.google.firebase.messaging.Aps
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import com.google.firebase.messaging.Notification
@@ -19,7 +20,9 @@ class FirebaseMessagingService(
             .build()
 
         val androidConfig = AndroidConfig.builder().setPriority(AndroidConfig.Priority.HIGH).build()
-        val apnConfig = ApnsConfig.builder().putHeader("apns-priority", "10").build()
+        val apnConfig = ApnsConfig.builder()
+            .setAps(Aps.builder().setBadge(42).build())
+            .putHeader("apns-priority", "10").build()
 
         val message = Message.builder()
             .setTopic(topic)
