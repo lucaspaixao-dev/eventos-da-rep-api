@@ -119,6 +119,7 @@ open class EventRepository(
             val entities = events.map { EventEntity(it.id!!, it, it.createdAt, LocalDateTime.now()) }
             postgresEventRepository.deleteAll(entities)
         } catch (e: Exception) {
+            logger.error("Error to delete events in batch: ${e.message}")
             throw RepositoryException("error deleting events in batch", e)
         }
     }
@@ -129,6 +130,7 @@ open class EventRepository(
 
             postgresEventRepository.deleteEventOnEventUser(eventId)
         } catch (e: Exception) {
+            logger.error("error to remove event on event users: ${e.message}")
             throw RepositoryException("error removing event from users events", e)
         }
     }

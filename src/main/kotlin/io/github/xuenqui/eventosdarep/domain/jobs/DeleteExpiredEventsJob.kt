@@ -13,8 +13,8 @@ class DeleteExpiredEventsJob(
 
     @Scheduled(cron = "0 0 * * *")
     fun execute() {
-        logger.info("deleting expired events")
-
+//        logger.info("deleting expired events")
+//
 //        val events = eventRepository.findALlWithoutPage()
 //        val date = LocalDateTime.now().minusDays(1)
 //
