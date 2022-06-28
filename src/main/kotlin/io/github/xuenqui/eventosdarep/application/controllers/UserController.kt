@@ -1,11 +1,9 @@
 package io.github.xuenqui.eventosdarep.application.controllers
 
-import io.github.xuenqui.eventosdarep.application.controllers.requests.CreateNotificationRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
-import io.github.xuenqui.eventosdarep.domain.jobs.SendReminderNotificationJob
 import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
@@ -19,8 +17,7 @@ import io.micronaut.http.annotation.QueryValue
 
 @Controller("/users")
 class UserController(
-    private val userService: UserService,
-    private val sendReminderNotificationJob: SendReminderNotificationJob
+    private val userService: UserService
 ) {
 
     @Post
@@ -68,24 +65,6 @@ class UserController(
         val domain = deviceRequest.toDomain()
         userService.updateDevice(userId, domain)
         return HttpResponse.noContent()
-    }
-
-    @Post("/{userId}/notification/send")
-    fun sendNotification(
-        @PathVariable("userId") userId: String,
-        notificationRequest: CreateNotificationRequest
-    ): HttpResponse<Void> {
-        logger.info("Request received to send notification for user with id $userId, $notificationRequest")
-        userService.sendNotification(userId, notificationRequest.title, notificationRequest.message)
-
-        return HttpResponse.noContent<Void?>().also {
-            logger.info("Notification sent to user $userId")
-        }
-    }
-
-    @Get("/reminder")
-    fun test() {
-        sendReminderNotificationJob.execute()
     }
 
     companion object : LoggableClass()

@@ -1,6 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain.services
 
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.Notification
 import io.github.xuenqui.eventosdarep.resources.rabbitmq.clients.NotificationClient
 import jakarta.inject.Singleton
 
@@ -9,15 +9,13 @@ class NotificationService(
     private val notificationClient: NotificationClient,
 ) {
 
-    fun sendNotificationToTokens(title: String, message: String, tokens: List<String>) {
-        if (tokens.isNotEmpty()) {
-            notificationClient.sendNotificationToUser(
-                data = NotificationMessageUser(
-                    tokens = tokens,
-                    title = title,
-                    message = message
-                )
+    fun sendNotificationToTopic(title: String, message: String, topic: String) {
+        notificationClient.sendNotificationToTopic(
+            data = Notification(
+                topic = topic,
+                title = title,
+                message = message
             )
-        }
+        )
     }
 }

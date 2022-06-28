@@ -38,45 +38,19 @@ class EventServiceTest {
     @Test
     fun `should create an event when there is not an anyone event with the same name`() {
         val eventMock = buildEventMock()
-        val userMock = buildUserMock()
-        val tokensMock = listOf(userMock.device!!.token)
 
         val title = "${eventMock.title} disponível! 🤩"
         val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
 
         every { eventRepository.findByTitle(eventMock.title) } returns null
         every { eventRepository.create(eventMock) } returns eventMock.id!!
-        every { userService.findAllWithoutPage() } returns listOf(userMock)
-        every { notificationService.sendNotificationToTokens(title, message, tokensMock) } just Runs
+        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) } just Runs
 
         assertDoesNotThrow { eventService.create(eventMock) }
 
         verify(exactly = 1) { eventRepository.findByTitle(eventMock.title) }
         verify(exactly = 1) { eventRepository.create(eventMock) }
-        verify(exactly = 1) { userService.findAllWithoutPage() }
-        verify(exactly = 1) { notificationService.sendNotificationToTokens(title, message, tokensMock) }
-    }
-
-    @Test
-    fun `should create an event when there is not an anyone event with the same name and the user doesnt have a device`() {
-        val eventMock = buildEventMock()
-        val userMock = buildUserMock().copy(device = null)
-        val tokensMock = emptyList<String>()
-
-        val title = "${eventMock.title} disponível! 🤩"
-        val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
-
-        every { eventRepository.findByTitle(eventMock.title) } returns null
-        every { eventRepository.create(eventMock) } returns eventMock.id!!
-        every { userService.findAllWithoutPage() } returns listOf(userMock)
-        every { notificationService.sendNotificationToTokens(title, message, tokensMock) } just Runs
-
-        assertDoesNotThrow { eventService.create(eventMock) }
-
-        verify(exactly = 1) { eventRepository.findByTitle(eventMock.title) }
-        verify(exactly = 1) { eventRepository.create(eventMock) }
-        verify(exactly = 1) { userService.findAllWithoutPage() }
-        verify(exactly = 1) { notificationService.sendNotificationToTokens(title, message, tokensMock) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, "users-topic") }
     }
 
     @Test
@@ -91,8 +65,7 @@ class EventServiceTest {
 
         verify(exactly = 1) { eventRepository.findByTitle(eventMock.title) }
         verify(exactly = 0) { eventRepository.create(eventMock) }
-        verify(exactly = 0) { userService.findAllWithoutPage() }
-        verify(exactly = 0) { notificationService.sendNotificationToTokens(any(), any(), any()) }
+        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
     }
 
     @Test
@@ -234,21 +207,18 @@ class EventServiceTest {
         val title = "${userMock.name} confirmou presença! 🎉"
         val message = "${userMock.name} confirmou presença no evento ${eventMock.title}!"
 
-        val tokensMock = listOf(userMock.device!!.token)
-
         every { eventRepository.findById(eventId) } returns eventMock
         every { userService.findById(userId) } returns userMock
         every { userService.findById(existsUser.id!!) } returns existsUser
         every { eventRepository.joinEvent(eventId, userId) } just Runs
-        every { notificationService.sendNotificationToTokens(title, message, tokensMock) } just Runs
+        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) } just Runs
 
         assertDoesNotThrow { eventService.join(eventId, userId) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }
-        verify(exactly = 1) { userService.findById(existsUser.id!!) }
         verify(exactly = 1) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTokens(title, message, tokensMock) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) }
     }
 
     @Test
@@ -267,7 +237,7 @@ class EventServiceTest {
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }
         verify(exactly = 0) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 0) { notificationService.sendNotificationToTokens(any(), any(), any()) }
+        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
     }
 
     @Test
@@ -286,7 +256,7 @@ class EventServiceTest {
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }
         verify(exactly = 0) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 0) { notificationService.sendNotificationToTokens(any(), any(), any()) }
+        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
     }
 
     @Test
@@ -330,7 +300,6 @@ class EventServiceTest {
     fun `should send notification to event when the users on event have the device`() {
         val userMock = buildUserMock()
         val userId = userMock.id!!
-        val tokens = listOf(userMock.device!!.token)
 
         val eventMock = buildEventMock().copy(users = listOf(userMock))
         val eventId = eventMock.id!!
@@ -341,20 +310,18 @@ class EventServiceTest {
 
         every { eventRepository.findById(eventId) } returns eventMock
         every { userService.findById(userId) } returns userMock
-        every { notificationService.sendNotificationToTokens(newTitle, message, tokens) } just Runs
+        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) } just Runs
 
         assertDoesNotThrow { eventService.sendNotification(eventId, title, message) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { userService.findById(userId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTokens(newTitle, message, tokens) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) }
     }
 
     @Test
     fun `should not send notification to event when the users on event not have the device`() {
         val userMock = buildUserMock().copy(device = null)
         val userId = userMock.id!!
-        val tokens = emptyList<String>()
 
         val eventMock = buildEventMock().copy(users = listOf(userMock))
         val eventId = eventMock.id!!
@@ -365,12 +332,11 @@ class EventServiceTest {
 
         every { eventRepository.findById(eventId) } returns eventMock
         every { userService.findById(userId) } returns userMock
-        every { notificationService.sendNotificationToTokens(newTitle, message, tokens) } just Runs
+        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) } just Runs
 
         assertDoesNotThrow { eventService.sendNotification(eventId, title, message) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { userService.findById(userId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTokens(newTitle, message, tokens) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) }
     }
 }

@@ -1,6 +1,6 @@
 package io.github.xuenqui.eventosdarep.resources.rabbitmq.clients
 
-import io.github.xuenqui.eventosdarep.resources.rabbitmq.NotificationMessageUser
+import io.github.xuenqui.eventosdarep.resources.rabbitmq.Notification
 import io.micronaut.rabbitmq.annotation.Binding
 import io.micronaut.rabbitmq.annotation.RabbitClient
 
@@ -8,5 +8,5 @@ import io.micronaut.rabbitmq.annotation.RabbitClient
 interface NotificationClient {
 
     @Binding("send-notification-user")
-    fun sendNotificationToUser(data: NotificationMessageUser)
+    fun sendNotificationToTopic(data: Notification)
 }

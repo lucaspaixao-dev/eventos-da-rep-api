@@ -1,8 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain.jobs
 
-import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.services.NotificationService
-import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.micronaut.scheduling.annotation.Scheduled
@@ -14,7 +12,6 @@ import java.time.format.DateTimeFormatter
 @Singleton
 class SendReminderNotificationJob(
     private val eventRepository: EventRepository,
-    private val userService: UserService,
     private val notificationService: NotificationService
 ) {
 
@@ -56,8 +53,7 @@ class SendReminderNotificationJob(
                 val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO AMANHÃ ÁS ${buildTime(it.begin)}? " +
                     "BORA SE DIVERTIR! 🤩"
 
-                val tokens = getUserTokens(it)
-                notificationService.sendNotificationToTokens(title, body, tokens)
+                notificationService.sendNotificationToTopic(title, body, it.id!!)
             }
         }
 
@@ -65,8 +61,7 @@ class SendReminderNotificationJob(
             oneWeekEvents.forEach {
                 val title = "FALTA UMA SEMANA PARA O EVENTO ${it.title} 😍"
                 val body = "E AI, ESTÁ ANCIOSO TAMBÉM PARA O EVENTO DA REP EM ${buildDate(it.date)}? 🤩"
-                val tokens = getUserTokens(it)
-                notificationService.sendNotificationToTokens(title, body, tokens)
+                notificationService.sendNotificationToTopic(title, body, it.id!!)
             }
         }
 
@@ -81,16 +76,6 @@ class SendReminderNotificationJob(
     private fun buildDate(date: LocalDateTime): String {
         val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return date.format(dtf)
-    }
-
-    private fun getUserTokens(event: Event): MutableList<String> {
-        val tokens = mutableListOf<String>()
-        event.users.forEach {
-            userService.findById(it.id!!).device?.run {
-                tokens.add(this.token)
-            }
-        }
-        return tokens
     }
 
     companion object : LoggableClass()

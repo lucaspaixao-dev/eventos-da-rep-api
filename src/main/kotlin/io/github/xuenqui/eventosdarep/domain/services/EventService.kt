@@ -86,41 +86,25 @@ class EventService(
     fun sendNotification(eventId: String, title: String, message: String) {
         val event = getEventOrThrowAnException(eventId)
         val newTitle = "${event.title}: $title"
-        val tokens = getUsersToken(event)
+        val topic = event.id!!
 
-        notificationService.sendNotificationToTokens(newTitle, message, tokens)
+        notificationService.sendNotificationToTopic(newTitle, message, topic)
     }
 
     private fun sendNotificationNewEvent(event: Event) {
-        val tokens = mutableListOf<String>()
         val title = "${event.title} disponível! 🤩"
         val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
+        val topic = "users-topic"
 
-        userService.findAllWithoutPage().forEach { user ->
-            if (user.device != null) {
-                tokens.add(user.device.token)
-            }
-        }
-
-        notificationService.sendNotificationToTokens(title, message, tokens)
+        notificationService.sendNotificationToTopic(title, message, topic)
     }
 
     private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
-        val tokens = getUsersToken(event)
         val title = "${user.name} confirmou presença! 🎉"
         val message = "${user.name} confirmou presença no evento ${event.title}!"
+        val topic = event.id!!
 
-        notificationService.sendNotificationToTokens(title, message, tokens)
-    }
-
-    private fun getUsersToken(event: Event): MutableList<String> {
-        val tokens = mutableListOf<String>()
-        event.users.forEach {
-            userService.findById(it.id!!).device?.run {
-                tokens.add(this.token)
-            }
-        }
-        return tokens
+        notificationService.sendNotificationToTopic(title, message, topic)
     }
 
     private fun getUserOrThrowAnException(userId: String) = userService.findById(userId)

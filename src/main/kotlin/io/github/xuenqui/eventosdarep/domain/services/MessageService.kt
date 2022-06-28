@@ -8,7 +8,8 @@ import jakarta.inject.Singleton
 class MessageService(
     private val messageRepository: MessageRepository,
     private val eventService: EventService,
-    private val userService: UserService
+    private val userService: UserService,
+    private val notificationService: NotificationService
 ) {
 
     fun create(text: String, userId: String, eventId: String): String {
@@ -26,7 +27,7 @@ class MessageService(
         val title = event.title
         val pushMessage = "${user.name}: $text"
 
-        eventService.sendNotification(eventId, title, pushMessage)
+        notificationService.sendNotificationToTopic(title, pushMessage, eventId)
         return id
     }
 

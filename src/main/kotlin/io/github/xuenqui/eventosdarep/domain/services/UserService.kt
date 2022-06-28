@@ -11,10 +11,8 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Singleton
-@SuppressWarnings("TooManyFunctions")
 class UserService(
     private val userRepository: UserRepository,
-    private val notificationService: NotificationService,
     private val invitationService: InvitationService
 ) {
 
@@ -81,17 +79,6 @@ class UserService(
             device = newDevice
         )
         userRepository.update(newUser)
-    }
-
-    fun sendNotification(userId: String, title: String, message: String) {
-        val user = getUserOrThrowAnException(userId)
-
-        if (user.device == null) {
-            throw ValidationException("User has no device")
-        }
-
-        val token = user.device.token
-        notificationService.sendNotificationToTokens(title, message, listOf(token))
     }
 
     private fun getUserOrThrowAnException(userId: String) =
