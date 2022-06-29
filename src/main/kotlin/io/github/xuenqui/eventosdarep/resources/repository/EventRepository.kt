@@ -18,7 +18,7 @@ open class EventRepository(
 
     fun findAll(page: Int, size: Int): List<Event> =
         try {
-            val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
+            val sort = Sort.UNSORTED.order(Sort.Order.asc("date"))
             val pageable = Pageable.from(page, size, sort)
 
             logger.info("finding all events")
@@ -48,7 +48,7 @@ open class EventRepository(
 
     fun findByActive(isActive: Boolean, page: Int, size: Int): List<Event> =
         try {
-            val sort = Sort.UNSORTED.order(Sort.Order.asc("createdAt"))
+            val sort = Sort.UNSORTED.order(Sort.Order.asc("date"))
             val pageable = Pageable.from(page, size, sort)
 
             logger.info("finding all active events")
