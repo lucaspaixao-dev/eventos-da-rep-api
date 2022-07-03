@@ -16,6 +16,8 @@ data class Event(
     val begin: LocalTime,
     val end: LocalTime,
     val active: Boolean,
+    val isPayed: Boolean = false,
+    val amount: Long? = null,
     val users: List<User> = emptyList(),
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null

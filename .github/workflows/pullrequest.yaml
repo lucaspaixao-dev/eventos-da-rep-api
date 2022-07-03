@@ -16,11 +16,11 @@ jobs:
           java-version: 11
           distribution: 'adopt'
 
-#      - name: Run Format code lint
-#        run: ./gradlew ktlintFormat
-#
-#      - name: Run Lint
-#        run: ./gradlew ktlintCheck
+      #      - name: Run Format code lint
+      #        run: ./gradlew ktlintFormat
+      #
+      #      - name: Run Lint
+      #        run: ./gradlew ktlintCheck
 
       - name: Build with Gradle
         run: ./gradlew clean build

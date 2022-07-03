@@ -8,6 +8,7 @@ import io.micronaut.data.annotation.Relation
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Null
 
 @MappedEntity("events")
 data class EventEntity(
@@ -22,6 +23,8 @@ data class EventEntity(
     @field:NotNull val date: LocalDateTime,
     @field:NotNull val begin: LocalTime,
     @field:NotNull val end: LocalTime,
+    @field:NotNull val isPayed: Boolean = false,
+    @field:Null val amount: Long? = null,
     @field:NotNull @field:Index(name = "event_active_index", columns = ["active"]) val active: Boolean,
     @field:NotNull @field:Index(
         name = "event_created_at_index",
@@ -48,6 +51,8 @@ data class EventEntity(
         begin = event.begin,
         end = event.end,
         active = event.active,
+        isPayed = event.isPayed,
+        amount = event.amount,
         createdAt = createdAt,
         updatedAt = null,
         users = users ?: emptyList()
@@ -72,6 +77,8 @@ data class EventEntity(
         begin = event.begin,
         end = event.end,
         active = event.active,
+        isPayed = event.isPayed,
+        amount = event.amount,
         createdAt = createdAt,
         updatedAt = updatedAt,
         users = users ?: emptyList()

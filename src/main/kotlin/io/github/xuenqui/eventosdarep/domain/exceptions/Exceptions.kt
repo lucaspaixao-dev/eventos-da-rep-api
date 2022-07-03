@@ -12,6 +12,8 @@ open class ApiException(
 class ValidationException(message: String, details: List<String>? = null) :
     ApiException(message, HttpStatus.BAD_REQUEST, details = details)
 
+class BadRequestException(message: String) : ApiException(message, HttpStatus.BAD_REQUEST)
+
 class ResourceAlreadyExistsException(message: String) : ApiException(message, HttpStatus.CONFLICT)
 
 class ResourceNotFoundException(message: String) : ApiException(message, HttpStatus.NOT_FOUND)

@@ -4,7 +4,6 @@ import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.micronaut.scheduling.annotation.Scheduled
 import jakarta.inject.Singleton
-import java.time.LocalDateTime
 
 @Singleton
 class DeleteExpiredEventsJob(

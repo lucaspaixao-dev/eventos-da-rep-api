@@ -14,14 +14,14 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.UUID
 import mocks.buildEventMock
 import mocks.buildUserMock
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.util.UUID
 
 class EventServiceTest {
 

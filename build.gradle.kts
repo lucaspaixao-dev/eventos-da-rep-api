@@ -40,6 +40,8 @@ dependencies {
 
     implementation("org.valiktor:valiktor-core:0.12.0")
 
+    implementation("com.stripe:stripe-java:20.130.0")
+
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.mongodb:mongodb-driver-sync")
