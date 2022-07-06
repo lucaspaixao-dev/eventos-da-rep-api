@@ -9,11 +9,11 @@ import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
 import io.github.xuenqui.eventosdarep.resources.repository.entities.EventEntity
 import io.github.xuenqui.eventosdarep.resources.repository.entities.PaymentEntity
 import io.github.xuenqui.eventosdarep.resources.repository.entities.UserEntity
-import jakarta.inject.Singleton
+import io.micronaut.data.annotation.Repository
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Singleton
+@Repository
 @SuppressWarnings("TooGenericExceptionCaught")
 open class PaymentRepository(
     private val postgresPaymentRepository: PostgresPaymentRepository
@@ -89,6 +89,27 @@ open class PaymentRepository(
             throw RepositoryException("error finding payment", e)
         }
     }
+
+    fun findByEventAndUser(userId: String, eventId: String): List<PaymentIntent> =
+        try {
+            postgresPaymentRepository.findByEventIdAndUserId(eventId, userId).map {
+                PaymentIntent(
+                    id = it.id,
+                    amount = it.amount,
+                    currency = Currency.valueOf(it.currency),
+                    gatewayPaymentId = it.clientId,
+                    gatewayPaymentIntentClientId = it.intentClientId,
+                    status = PaymentStatus.valueOf(it.status),
+                    eventId = it.event!!.id!!,
+                    userId = it.user!!.id!!,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
+                    payAt = it.payAt
+                )
+            }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding payments", e)
+        }
 
     fun updateStatus(paymentIntent: PaymentIntent) {
         try {

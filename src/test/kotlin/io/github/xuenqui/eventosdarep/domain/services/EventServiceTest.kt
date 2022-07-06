@@ -241,25 +241,6 @@ class EventServiceTest {
     }
 
     @Test
-    fun `should throw an exception when the user does not have a device when try to join an event`() {
-        val userMock = buildUserMock().copy(device = null)
-        val userId = userMock.id!!
-
-        val eventMock = buildEventMock().copy(users = emptyList())
-        val eventId = eventMock.id!!
-
-        every { eventRepository.findById(eventId) } returns eventMock
-        every { userService.findById(userId) } returns userMock
-
-        assertThrows<ValidationException>("User must have a device") { eventService.join(eventId, userId) }
-
-        verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { userService.findById(userId) }
-        verify(exactly = 0) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
-    }
-
-    @Test
     fun `should exit to the event when the user is going to the event`() {
         val userMock = buildUserMock()
         val userId = userMock.id!!

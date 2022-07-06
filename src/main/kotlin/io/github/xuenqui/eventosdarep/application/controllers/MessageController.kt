@@ -8,13 +8,17 @@ import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
+import io.micronaut.security.annotation.Secured
+import io.micronaut.security.rules.SecurityRule
 
 @Controller("/events")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 class MessageController(
     private val messageService: MessageService
 ) {
 
     @Post("/{eventId}/messages/user/{userId}/send")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     fun create(
         @PathVariable("eventId") eventId: String,
         @PathVariable("userId") userId: String,

@@ -41,6 +41,8 @@ class PaymentService(
         return paymentIntent.gatewayPaymentIntentClientId
     }
 
+    fun findByEventAndUser(eventId: String, userId: String) = paymentRepository.findByEventAndUser(eventId, userId)
+
     fun confirmPaymentAndJoinTheEvent(paymentIntentClientId: String) {
         val paymentIntent = paymentRepository.findByPaymentIntentClientId(paymentIntentClientId)
             ?: throw ResourceNotFoundException("payment intent not found")

@@ -14,6 +14,7 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Header
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
@@ -24,13 +25,21 @@ class PaymentController(
     private val paymentService: PaymentService
 ) {
 
-    @Post("/events/{eventId}/users/{userId}/payments/create")
+    @Post("/events/{eventId}/users/{userId}/payments")
     fun createPayment(
         @PathVariable("userId") userId: String,
         @PathVariable("eventId") eventId: String
     ): HttpResponse<Map<String, String>> {
         val id = paymentService.createPaymentIntent(userId, eventId)
         return HttpResponse.created(mapOf("id" to id))
+    }
+
+    @Get("/events/{eventId}/users/{userId}/payments")
+    fun findByEventAndUser(
+        @PathVariable("userId") userId: String,
+        @PathVariable("eventId") eventId: String
+    ): List<io.github.xuenqui.eventosdarep.domain.PaymentIntent> {
+        return paymentService.findByEventAndUser(userId, eventId)
     }
 
     @Post("/stripe/webhook")
@@ -63,7 +72,7 @@ class PaymentController(
                 paymentService.confirmPaymentAndJoinTheEvent(paymentIntent.clientSecret)
                 logger.info("payment completed: ${paymentIntent.id}")
             }
-            "payment_intent.payment_faile" -> {
+            "payment_intent.payment_failed" -> {
                 val paymentIntent = stripeObject as PaymentIntent
                 paymentService.rejectPayment(paymentIntent.clientSecret)
                 logger.info("payment failed: ${paymentIntent.id}")

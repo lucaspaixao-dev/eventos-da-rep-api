@@ -22,6 +22,10 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.security:micronaut-security")
+
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
 
     implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
@@ -33,7 +37,6 @@ dependencies {
     implementation("com.google.firebase:firebase-admin:9.0.0")
 
     implementation("io.micronaut.data:micronaut-data-jdbc")
-    implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
 
     implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
@@ -50,8 +53,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
     testImplementation("io.mockk:mockk:1.12.4")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:testcontainers")
 }
 
 application {

@@ -24,8 +24,6 @@ class UserService(
 
     fun findAll(page: Int, size: Int): List<User> = userRepository.findAll(page, size)
 
-    fun findAllWithoutPage(): List<User> = userRepository.findAllWithoutPage()
-
     fun findById(id: String): User = userRepository.findById(id) ?: throw ResourceNotFoundException("User not found")
 
     fun findByEmail(email: String): User = userRepository.findByEmail(email)
