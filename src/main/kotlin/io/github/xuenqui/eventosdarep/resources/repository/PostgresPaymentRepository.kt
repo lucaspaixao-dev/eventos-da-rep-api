@@ -16,9 +16,17 @@ interface PostgresPaymentRepository : CrudRepository<PaymentEntity, String> {
 
     @Join(value = "user", type = Join.Type.LEFT_FETCH)
     @Join(value = "event", type = Join.Type.LEFT_FETCH)
+    fun findByClientId(clientId: String): Optional<PaymentEntity>
+
+    @Join(value = "user", type = Join.Type.LEFT_FETCH)
+    @Join(value = "event", type = Join.Type.LEFT_FETCH)
     override fun findById(id: String): Optional<PaymentEntity>
 
     @Join(value = "user", type = Join.Type.LEFT_FETCH)
     @Join(value = "event", type = Join.Type.LEFT_FETCH)
     fun findByEventIdAndUserId(eventId: String, userId: String): List<PaymentEntity>
+
+    @Join(value = "user", type = Join.Type.LEFT_FETCH)
+    @Join(value = "event", type = Join.Type.LEFT_FETCH)
+    fun findByUserId(userId: String): List<PaymentEntity>
 }

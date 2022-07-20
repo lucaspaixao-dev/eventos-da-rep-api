@@ -5,36 +5,39 @@ import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.Index
 import io.micronaut.data.annotation.MappedEntity
 import io.micronaut.data.annotation.Relation
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.validation.constraints.NotNull
-import javax.validation.constraints.Null
 
 @MappedEntity("events")
 data class EventEntity(
     @field:Id val id: String? = null,
-    @field:NotNull @field:Index(name = "event_title_index", unique = true, columns = ["title"]) val title: String,
+    @field:NotNull @field:Index(name = "event_title_index", unique = true, columns = ["title"])
+    val title: String,
     @field:NotNull val latitude: Double,
     @field:NotNull val longitude: Double,
     @field:NotNull val city: String,
     @field:NotNull val address: String,
     @field:NotNull val description: String,
     @field:NotNull val photo: String,
-    @field:NotNull val date: LocalDateTime,
+    @field:NotNull val date: LocalDate,
     @field:NotNull val begin: LocalTime,
     @field:NotNull val end: LocalTime,
     @field:NotNull val isPayed: Boolean = false,
-    @field:Null val amount: Long? = null,
-    @field:NotNull @field:Index(name = "event_active_index", columns = ["active"]) val active: Boolean,
+    @field:NotNull val amount: Long? = 0,
+    @field:NotNull @field:Index(name = "event_active_index", columns = ["active"])
+    val active: Boolean,
     @field:NotNull @field:Index(
         name = "event_created_at_index",
         columns = ["created_at"]
-    ) val createdAt: LocalDateTime = LocalDateTime.now(),
+    )
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null,
 
     @field:Relation(
         Relation.Kind.MANY_TO_MANY,
-        cascade = [Relation.Cascade.NONE],
+        cascade = [Relation.Cascade.NONE]
     ) val users: List<UserEntity> = emptyList()
 ) {
 

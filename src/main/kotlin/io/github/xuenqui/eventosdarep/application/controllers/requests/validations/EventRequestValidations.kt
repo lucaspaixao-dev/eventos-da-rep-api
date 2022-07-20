@@ -2,14 +2,11 @@ package io.github.xuenqui.eventosdarep.application.controllers.requests.validati
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.EventRequest
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
-import java.time.LocalDateTime
 import java.util.Locale
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.hasSize
-import org.valiktor.functions.isGreaterThan
 import org.valiktor.functions.isLessThan
 import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.isNotNull
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
 
@@ -27,10 +24,10 @@ fun EventRequest.validateRequest() {
             validate(EventRequest::city).isNotBlank()
             validate(EventRequest::city).hasSize(min = 5, max = 50)
             validate(EventRequest::photo).isNotBlank()
-            validate(EventRequest::date).isNotNull()
-            validate(EventRequest::date).isGreaterThan(LocalDateTime.now())
-            validate(EventRequest::begin).isNotNull()
-            validate(EventRequest::end).isNotNull()
+//            validate(EventRequest::date).isNotNull()
+//            validate(EventRequest::date).isGreaterThan(LocalDate.now())
+//            validate(EventRequest::begin).isNotNull()
+//            validate(EventRequest::end).isNotNull()
         }
     } catch (e: ConstraintViolationException) {
         val errors = e.constraintViolations

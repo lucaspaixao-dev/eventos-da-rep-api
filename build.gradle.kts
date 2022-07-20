@@ -45,10 +45,10 @@ dependencies {
 
     implementation("com.stripe:stripe-java:20.130.0")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("org.mongodb:mongodb-driver-sync")
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")

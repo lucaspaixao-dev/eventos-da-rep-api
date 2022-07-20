@@ -19,26 +19,30 @@ data class PaymentEntity(
     @field:NotNull @field:Index(
         name = "payment_intent_client_id_index",
         columns = ["intent_client_id"]
-    ) val intentClientId: String,
+    )
+    val intentClientId: String,
 
     @field:NotNull val status: String,
 
     @Nullable @field:Relation(
         Relation.Kind.ONE_TO_ONE,
         cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    ) val user: UserEntity? = null,
+    )
+    val user: UserEntity? = null,
 
     @Nullable @field:Relation(
         Relation.Kind.ONE_TO_ONE,
         cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    ) val event: EventEntity? = null,
+    )
+    val event: EventEntity? = null,
 
     @field:NotNull @field:Index(
         name = "payment_created_at_index",
         columns = ["created_at"]
-    ) val createdAt: LocalDateTime = LocalDateTime.now(),
+    )
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 
     val payAt: LocalDateTime? = null,
 
-    val updatedAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null
 )

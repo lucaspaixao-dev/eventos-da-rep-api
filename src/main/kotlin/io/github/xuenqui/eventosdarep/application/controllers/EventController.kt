@@ -8,6 +8,7 @@ import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.services.EventService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
@@ -17,14 +18,16 @@ import io.micronaut.http.annotation.QueryValue
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 
-@Controller("/events")
 @Secured(SecurityRule.IS_AUTHENTICATED)
+@Controller("/events")
 class EventController(
     private val eventService: EventService
 ) {
 
     @Post
-    fun create(eventRequest: EventRequest): HttpResponse<Map<String, String>> {
+    fun create(
+        @Body eventRequest: EventRequest
+    ): HttpResponse<Map<String, String>> {
         logger.info("Request received to create a new event, $eventRequest")
 
         eventRequest.validateRequest()
@@ -39,13 +42,13 @@ class EventController(
     @Get
     fun getAll(
         @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String,
+        @QueryValue(value = "size", defaultValue = "20") size: String
     ): List<Event> = eventService.findAll(page.toInt(), size.toInt())
 
     @Get("/actives")
     fun getActiveEvents(
         @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String,
+        @QueryValue(value = "size", defaultValue = "20") size: String
     ): List<Event> = eventService.findActiveEvents(page.toInt(), size.toInt())
 
     @Get("/{id}")
@@ -68,7 +71,7 @@ class EventController(
     @Put("/{eventId}/users/{userId}/accept")
     fun join(
         @PathVariable("eventId") eventId: String,
-        @PathVariable("userId") userId: String,
+        @PathVariable("userId") userId: String
     ): HttpResponse<Void> {
         logger.info("Request received to join event, $eventId, $userId")
         eventService.join(eventId, userId)
@@ -80,7 +83,7 @@ class EventController(
     @Put("/{eventId}/users/{userId}/disavow")
     fun remove(
         @PathVariable("eventId") eventId: String,
-        @PathVariable("userId") userId: String,
+        @PathVariable("userId") userId: String
     ): HttpResponse<Void> {
         logger.info("Request received to remove user from event, $eventId, $userId")
         eventService.remove(eventId, userId)
@@ -89,9 +92,9 @@ class EventController(
         }
     }
 
-    @Post("/{id}/notification/send")
+    @Post("/{eventId}/notifications")
     fun sendNotification(
-        @PathVariable("id") eventId: String,
+        @PathVariable("eventId") eventId: String,
         notificationRequest: CreateNotificationRequest
     ): HttpResponse<Void> {
         logger.info("Request received to send notification to event, $eventId, $notificationRequest")

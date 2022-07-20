@@ -1,6 +1,7 @@
 package mocks
 
 import io.github.xuenqui.eventosdarep.domain.Event
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
@@ -14,7 +15,7 @@ internal fun buildEventMock(id: String? = null) = Event(
     address = "Address test",
     description = "Test",
     photo = "test photo",
-    date = LocalDateTime.now(),
+    date = LocalDate.now(),
     begin = LocalTime.now(),
     end = LocalTime.now(),
     active = true,

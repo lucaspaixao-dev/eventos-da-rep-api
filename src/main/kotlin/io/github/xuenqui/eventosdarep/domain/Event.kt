@@ -1,5 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -12,7 +13,7 @@ data class Event(
     val address: String,
     val description: String,
     val photo: String,
-    val date: LocalDateTime,
+    val date: LocalDate,
     val begin: LocalTime,
     val end: LocalTime,
     val active: Boolean,

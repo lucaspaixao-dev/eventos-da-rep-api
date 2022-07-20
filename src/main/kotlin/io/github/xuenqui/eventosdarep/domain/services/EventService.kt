@@ -6,6 +6,7 @@ import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsExc
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Singleton
@@ -33,11 +34,8 @@ class EventService(
         eventRepository.findByActive(true, page, size)
             .filter {
                 val eventTime = it.date
-                    .withHour(it.end.hour)
-                    .withMinute(it.end.minute)
-                    .withSecond(it.end.second)
 
-                val currentTime = LocalDateTime.now()
+                val currentTime = LocalDate.now()
 
                 eventTime >= currentTime
             }.toList()

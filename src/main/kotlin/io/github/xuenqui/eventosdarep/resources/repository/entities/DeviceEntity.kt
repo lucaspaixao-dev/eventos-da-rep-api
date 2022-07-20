@@ -22,7 +22,7 @@ data class DeviceEntity(
         brand = device.brand,
         model = device.model,
         createdAt = createdAt,
-        updatedAt = null,
+        updatedAt = null
     )
 
     constructor(id: String, device: Device, createdAt: LocalDateTime, updatedAt: LocalDateTime) : this(
@@ -31,6 +31,6 @@ data class DeviceEntity(
         brand = device.brand,
         model = device.model,
         createdAt = createdAt,
-        updatedAt = updatedAt,
+        updatedAt = updatedAt
     )
 }

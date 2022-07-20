@@ -9,7 +9,7 @@ data class MessageResponse(
     val status: String = "seen",
     val text: String,
     val type: String,
-    val createdAt: Long,
+    val createdAt: Long
 ) {
     constructor(message: Message) : this(
         createdAt = message.createdAt!!,

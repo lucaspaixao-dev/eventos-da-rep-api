@@ -6,7 +6,7 @@ import jakarta.inject.Singleton
 
 @Singleton
 class NotificationService(
-    private val notificationClient: NotificationClient,
+    private val notificationClient: NotificationClient
 ) {
 
     fun sendNotificationToTopic(title: String, message: String, topic: String) {

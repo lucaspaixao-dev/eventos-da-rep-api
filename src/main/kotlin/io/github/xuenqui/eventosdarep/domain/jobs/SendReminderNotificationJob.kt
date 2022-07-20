@@ -5,7 +5,7 @@ import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.micronaut.scheduling.annotation.Scheduled
 import jakarta.inject.Singleton
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -19,11 +19,7 @@ class SendReminderNotificationJob(
     fun execute() {
         logger.info("Running events reminder job")
 
-        val now = LocalDateTime.now()
-            .withHour(0)
-            .withMinute(0)
-            .withSecond(0)
-            .withNano(0)
+        val now = LocalDate.now()
 
         val events = eventRepository.findALlWithoutPage()
         val tomorrow = now.plusDays(1)
@@ -31,19 +27,11 @@ class SendReminderNotificationJob(
 
         val tomorrowEvents = events.filter {
             it.date
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0)
                 .isEqual(tomorrow)
         }.toList()
 
         val oneWeekEvents = events.filter {
             it.date
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0)
                 .isEqual(oneWeek)
         }.toList()
 
@@ -73,7 +61,7 @@ class SendReminderNotificationJob(
         return begin.format(dtf)
     }
 
-    private fun buildDate(date: LocalDateTime): String {
+    private fun buildDate(date: LocalDate): String {
         val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
         return date.format(dtf)
     }

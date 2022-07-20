@@ -20,7 +20,7 @@ class MessageService(
             text = text,
             type = "text",
             eventId = eventId,
-            user = user,
+            user = user
         )
 
         val id = messageRepository.create(message, event, user)

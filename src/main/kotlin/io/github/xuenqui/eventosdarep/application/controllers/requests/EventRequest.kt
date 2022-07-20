@@ -12,10 +12,12 @@ data class EventRequest(
     val address: String,
     val description: String,
     val photo: String,
-    val date: LocalDateTime,
+    val eventDate: LocalDateTime,
     val begin: LocalTime,
     val end: LocalTime,
     val active: Boolean = true,
+    val isPayed: Boolean? = false,
+    val amount: Long? = null
 )
 
 fun EventRequest.toDomain() = Event(
@@ -26,8 +28,10 @@ fun EventRequest.toDomain() = Event(
     address = this.address,
     description = this.description,
     photo = this.photo,
-    date = this.date,
+    date = this.eventDate.toLocalDate(),
     begin = this.begin,
     end = this.end,
     active = this.active,
+    isPayed = this.isPayed ?: false,
+    amount = this.amount ?: 0
 )

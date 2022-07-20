@@ -18,15 +18,18 @@ data class MessageEntity(
     @Nullable @field:Relation(
         Relation.Kind.ONE_TO_ONE,
         cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    ) val user: UserEntity? = null,
+    )
+    val user: UserEntity? = null,
 
     @Nullable @field:Relation(
         Relation.Kind.ONE_TO_ONE,
         cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    ) val event: EventEntity? = null,
+    )
+    val event: EventEntity? = null,
 
     @field:NotNull @field:Index(
         name = "message_created_at_index",
         columns = ["created_at"]
-    ) val createdAt: LocalDateTime = LocalDateTime.now()
+    )
+    val createdAt: LocalDateTime = LocalDateTime.now()
 )

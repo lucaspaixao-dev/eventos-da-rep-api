@@ -7,13 +7,13 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
-import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
@@ -153,7 +153,7 @@ class EventServiceTest {
             address = "new address",
             description = "new description",
             photo = "new photo",
-            date = LocalDateTime.now().plusDays(1),
+            date = LocalDate.now().plusDays(1),
             begin = LocalTime.now().plusHours(2),
             end = LocalTime.now().plusHours(3),
             active = false,

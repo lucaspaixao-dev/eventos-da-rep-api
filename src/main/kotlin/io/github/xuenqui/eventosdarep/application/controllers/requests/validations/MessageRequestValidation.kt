@@ -11,6 +11,8 @@ import org.valiktor.validate
 fun MessageRequest.validateRequest() {
     try {
         validate(this) {
+            validate(MessageRequest::userId).isNotBlank()
+            validate(MessageRequest::eventId).isNotBlank()
             validate(MessageRequest::text).isNotBlank()
         }
     } catch (e: ConstraintViolationException) {

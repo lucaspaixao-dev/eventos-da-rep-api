@@ -65,7 +65,7 @@ open class UserRepository(
             val deviceEntity = DeviceEntity(
                 id = UUID.randomUUID().toString(),
                 device = user.device!!,
-                createdAt = LocalDateTime.now(),
+                createdAt = LocalDateTime.now()
             )
 
             logger.info("creating a new device: $deviceEntity")

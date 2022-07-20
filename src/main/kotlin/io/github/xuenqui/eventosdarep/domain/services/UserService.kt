@@ -45,7 +45,7 @@ class UserService(
             ),
             isAdmin = user.isAdmin,
             photo = user.photo,
-            createdAt = user.createdAt,
+            createdAt = user.createdAt
         )
 
         userRepository.update(newUser)

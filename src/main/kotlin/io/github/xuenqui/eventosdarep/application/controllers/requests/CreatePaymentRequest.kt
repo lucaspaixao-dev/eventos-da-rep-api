@@ -1,7 +1,6 @@
 package io.github.xuenqui.eventosdarep.application.controllers.requests
 
-data class MessageRequest(
-    val eventId: String,
+data class CreatePaymentRequest(
     val userId: String,
-    val text: String
+    val eventId: String
 )

@@ -59,7 +59,7 @@ open class PaymentRepository(
                 event = eventEntity,
                 status = paymentIntent.status.name,
                 createdAt = LocalDateTime.now(),
-                payAt = null,
+                payAt = null
             )
 
             postgresPaymentRepository.save(paymentEntity)
@@ -79,6 +79,7 @@ open class PaymentRepository(
                     gatewayPaymentIntentClientId = it.intentClientId,
                     status = PaymentStatus.valueOf(it.status),
                     eventId = it.event!!.id!!,
+                    eventName = it.event.title,
                     userId = it.user!!.id!!,
                     createdAt = it.createdAt,
                     updatedAt = it.updatedAt,
@@ -89,6 +90,52 @@ open class PaymentRepository(
             throw RepositoryException("error finding payment", e)
         }
     }
+
+    fun findByGatewayPaymentId(gatewayPaymentId: String): PaymentIntent? {
+        try {
+            return postgresPaymentRepository.findByClientId(gatewayPaymentId).map {
+                PaymentIntent(
+                    id = it.id,
+                    amount = it.amount,
+                    currency = Currency.valueOf(it.currency),
+                    gatewayPaymentId = it.clientId,
+                    gatewayPaymentIntentClientId = it.intentClientId,
+                    status = PaymentStatus.valueOf(it.status),
+                    eventId = it.event!!.id!!,
+                    eventName = it.event.title,
+                    userId = it.user!!.id!!,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
+                    payAt = it.payAt
+                )
+            }.orElse(null)
+        } catch (e: Exception) {
+            throw RepositoryException("error finding payment", e)
+        }
+    }
+
+    fun findById(paymentId: String) =
+        try {
+            postgresPaymentRepository.findById(paymentId).map {
+                val paymentIntent = PaymentIntent(
+                    id = it.id,
+                    amount = it.amount,
+                    currency = Currency.valueOf(it.currency),
+                    gatewayPaymentId = it.clientId,
+                    gatewayPaymentIntentClientId = it.intentClientId,
+                    status = PaymentStatus.valueOf(it.status),
+                    eventId = it.event!!.id!!,
+                    eventName = it.event.title,
+                    userId = it.user!!.id!!,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
+                    payAt = it.payAt
+                )
+                paymentIntent
+            }.orElse(null)
+        } catch (e: Exception) {
+            throw RepositoryException("error finding payment", e)
+        }
 
     fun findByEventAndUser(userId: String, eventId: String): List<PaymentIntent> =
         try {
@@ -101,6 +148,29 @@ open class PaymentRepository(
                     gatewayPaymentIntentClientId = it.intentClientId,
                     status = PaymentStatus.valueOf(it.status),
                     eventId = it.event!!.id!!,
+                    eventName = it.event.title,
+                    userId = it.user!!.id!!,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
+                    payAt = it.payAt
+                )
+            }.toList()
+        } catch (e: Exception) {
+            throw RepositoryException("error finding payments", e)
+        }
+
+    fun findByUser(userId: String): List<PaymentIntent> =
+        try {
+            postgresPaymentRepository.findByUserId(userId).map {
+                PaymentIntent(
+                    id = it.id,
+                    amount = it.amount,
+                    currency = Currency.valueOf(it.currency),
+                    gatewayPaymentId = it.clientId,
+                    gatewayPaymentIntentClientId = it.intentClientId,
+                    status = PaymentStatus.valueOf(it.status),
+                    eventId = it.event!!.id!!,
+                    eventName = it.event.title,
                     userId = it.user!!.id!!,
                     createdAt = it.createdAt,
                     updatedAt = it.updatedAt,
@@ -115,7 +185,9 @@ open class PaymentRepository(
         try {
             val entity = postgresPaymentRepository.findById(paymentIntent.id!!).get()
             val newEntity = entity.copy(
-                status = paymentIntent.status.name, payAt = paymentIntent.payAt, updatedAt = LocalDateTime.now()
+                status = paymentIntent.status.name,
+                payAt = paymentIntent.payAt,
+                updatedAt = LocalDateTime.now()
             )
 
             postgresPaymentRepository.update(newEntity)

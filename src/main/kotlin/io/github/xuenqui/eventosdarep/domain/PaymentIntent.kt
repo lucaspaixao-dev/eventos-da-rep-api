@@ -10,15 +10,17 @@ data class PaymentIntent(
     val currency: Currency = Currency.BRL,
     val userId: String,
     val eventId: String,
+    val eventName: String,
     val status: PaymentStatus = PaymentStatus.PENDING,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null,
-    val payAt: LocalDateTime? = null,
+    val payAt: LocalDateTime? = null
 )
 
 enum class PaymentStatus {
     PENDING,
     PROCESSING,
+    REFUNDED,
     SUCCESS,
     FAILED
 }

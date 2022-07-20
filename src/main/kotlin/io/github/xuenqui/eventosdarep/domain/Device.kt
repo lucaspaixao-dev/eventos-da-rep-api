@@ -8,5 +8,5 @@ data class Device(
     val brand: String,
     val model: String,
     val createdAt: LocalDateTime? = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = null,
+    val updatedAt: LocalDateTime? = null
 )

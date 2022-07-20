@@ -23,6 +23,7 @@ class UserController(
 ) {
 
     @Post
+    @Secured(SecurityRule.IS_ANONYMOUS)
     fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
         logger.info("Request received to create a new user $userRequest")
 
@@ -39,7 +40,7 @@ class UserController(
     @Secured(SecurityRule.IS_AUTHENTICATED)
     fun findAll(
         @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String,
+        @QueryValue(value = "size", defaultValue = "20") size: String
     ) = userService.findAll(page.toInt(), size.toInt())
 
     @Get("/email/{email}")
