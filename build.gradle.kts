@@ -1,7 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("org.jetbrains.kotlin.kapt") version "1.7.10"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.0"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.7.10"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.micronaut.application") version "3.5.1"
     id("io.micronaut.library") version "3.4.1"
@@ -22,6 +22,10 @@ dependencies {
     implementation("io.micronaut:micronaut-validation")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.security:micronaut-security")
+
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
 
     implementation("io.micronaut.kotlin:micronaut-kotlin-extension-functions")
     implementation("io.micronaut.kotlin:micronaut-kotlin-runtime")
@@ -33,23 +37,22 @@ dependencies {
     implementation("com.google.firebase:firebase-admin:9.0.0")
 
     implementation("io.micronaut.data:micronaut-data-jdbc")
-    implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
 
     implementation("io.micronaut.rabbitmq:micronaut-rabbitmq")
 
     implementation("org.valiktor:valiktor-core:0.12.0")
 
+    implementation("com.stripe:stripe-java:20.130.0")
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("org.mongodb:mongodb-driver-sync")
-    runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
     testImplementation("io.mockk:mockk:1.12.4")
-    testImplementation("org.testcontainers:postgresql")
-    testImplementation("org.testcontainers:testcontainers")
 }
 
 application {
@@ -77,6 +80,15 @@ tasks.register("stage") {
     dependsOn("clean")
 
     tasks.findByName("build")?.mustRunAfter("clean")
+
+    doLast {
+        val fileTree = fileTree("$buildDir/distributions").matching {
+            include("*.tar")
+            include("*.zip")
+        }
+
+        delete(fileTree)
+    }
 }
 
 tasks.register("copyToLib", Copy::class) {

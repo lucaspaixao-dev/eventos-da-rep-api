@@ -13,19 +13,22 @@ import javax.validation.constraints.NotNull
 data class UserEntity(
     @field:Id val id: String? = null,
     @field:NotNull val name: String,
-    @field:NotNull @field:Index(name = "user_email_index", unique = true, columns = ["email"]) val email: String,
+    @field:NotNull @field:Index(name = "user_email_index", unique = true, columns = ["email"])
+    val email: String,
     @field:NotNull val isAdmin: Boolean,
     @field:NotNull val photo: String,
     @field:NotNull @field:Index(
         name = "user_created_at_index",
         columns = ["created_at"]
-    ) val createdAt: LocalDateTime = LocalDateTime.now(),
+    )
+    val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null,
 
     @Nullable @field:Relation(
         Relation.Kind.ONE_TO_ONE,
         cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    ) val device: DeviceEntity? = null
+    )
+    val device: DeviceEntity? = null
 ) {
 
     constructor(id: String, user: User, device: DeviceEntity, createdAt: LocalDateTime) : this(

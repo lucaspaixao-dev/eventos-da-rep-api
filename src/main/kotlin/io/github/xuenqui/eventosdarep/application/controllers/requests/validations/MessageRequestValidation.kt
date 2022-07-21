@@ -2,15 +2,17 @@ package io.github.xuenqui.eventosdarep.application.controllers.requests.validati
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.MessageRequest
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
+import java.util.Locale
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.isNotBlank
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
-import java.util.Locale
 
 fun MessageRequest.validateRequest() {
     try {
         validate(this) {
+            validate(MessageRequest::userId).isNotBlank()
+            validate(MessageRequest::eventId).isNotBlank()
             validate(MessageRequest::text).isNotBlank()
         }
     } catch (e: ConstraintViolationException) {

@@ -4,3 +4,7 @@ rabbitmq:
 
 firebase:
   path: classpath:firebase.json
+
+stripe:
+  apiKey: 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
+  endpointSecret: whsec_5QKUxnbmQ5o1WD8Q8yQQXlQFLjOokw9o

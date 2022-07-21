@@ -28,5 +28,5 @@ fun UserRequest.toDomain() = User(
 fun DeviceRequest.toDomain() = Device(
     token = token,
     brand = brand,
-    model = model,
+    model = model
 )

@@ -4,9 +4,9 @@ import io.github.xuenqui.eventosdarep.domain.Event
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
-import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import jakarta.inject.Singleton
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Singleton
@@ -34,11 +34,8 @@ class EventService(
         eventRepository.findByActive(true, page, size)
             .filter {
                 val eventTime = it.date
-                    .withHour(it.end.hour)
-                    .withMinute(it.end.minute)
-                    .withSecond(it.end.second)
 
-                val currentTime = LocalDateTime.now()
+                val currentTime = LocalDate.now()
 
                 eventTime >= currentTime
             }.toList()
@@ -59,7 +56,6 @@ class EventService(
     fun join(eventId: String, userId: String) {
         val event = getEventOrThrowAnException(eventId)
         val user = getUserOrThrowAnException(userId)
-        getDeviceOrThrowAnException(user)
 
         val isGoing = event.users.any {
             it.id == userId
@@ -74,7 +70,6 @@ class EventService(
     fun remove(eventId: String, userId: String) {
         val event = getEventOrThrowAnException(eventId)
         val user = getUserOrThrowAnException(userId)
-        getDeviceOrThrowAnException(user)
 
         event.users.find {
             it.id == user.id
@@ -111,10 +106,4 @@ class EventService(
 
     private fun getEventOrThrowAnException(eventId: String) =
         eventRepository.findById(eventId) ?: throw ResourceNotFoundException("Event not found")
-
-    private fun getDeviceOrThrowAnException(user: User) {
-        if (user.device == null) {
-            throw ValidationException("User must have a device")
-        }
-    }
 }

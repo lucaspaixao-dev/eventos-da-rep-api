@@ -1,6 +1,15 @@
 micronaut:
   application:
     name: eventos-da-rep-api
+  security:
+    enabled: true
+    intercept-url-map:
+      - pattern: /**
+        access:
+          - isAuthenticated()
+    token:
+      jwt:
+        enabled: true
   server:
     port: ${PORT:8080}
     cors:
@@ -31,3 +40,7 @@ rabbitmq:
 
 firebase:
   path: classpath:firebase-dev.json
+
+stripe:
+  apiKey: sk_test_51LGNtsA6S1gOJhLnYkOItinnQa3oWeSGpvTaFjitx406NNncEhIElxALLLX07HHumCUHpj7ng4dAgJMLcq0PA1kv00QkTRCqCu
+  endpointSecret: whsec_fbb9d2bb87305c00a634c432279e588d2af2ffed4210eadce4948ecfa654b3f2

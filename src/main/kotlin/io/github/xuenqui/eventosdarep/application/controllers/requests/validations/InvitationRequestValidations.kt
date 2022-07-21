@@ -2,13 +2,13 @@ package io.github.xuenqui.eventosdarep.application.controllers.requests.validati
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.InvitationRequest
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
+import java.util.Locale
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isEmail
 import org.valiktor.functions.isNotBlank
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
-import java.util.Locale
 
 fun InvitationRequest.validateRequest() {
     try {

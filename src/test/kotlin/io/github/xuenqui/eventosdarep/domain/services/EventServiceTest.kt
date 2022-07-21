@@ -7,7 +7,6 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceAlreadyExistsException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
-import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
 import io.mockk.Runs
 import io.mockk.every
@@ -19,6 +18,7 @@ import mocks.buildUserMock
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
@@ -109,7 +109,7 @@ class EventServiceTest {
 
     @Test
     fun `should return all the events actives when there is an event bigger than now`() {
-        val eventMock = buildEventMock().copy(end = LocalTime.now().plusMinutes(10))
+        val eventMock = buildEventMock().copy(date = LocalDate.now().plusDays(1))
         val page = 0
         val size = 20
 
@@ -126,7 +126,7 @@ class EventServiceTest {
 
     @Test
     fun `should return all the events actives when there is an event smaller than now`() {
-        val eventMock = buildEventMock().copy(end = LocalTime.now().minusMinutes(10))
+        val eventMock = buildEventMock().copy(date = LocalDate.now().minusDays(1))
         val page = 0
         val size = 20
 
@@ -153,7 +153,7 @@ class EventServiceTest {
             address = "new address",
             description = "new description",
             photo = "new photo",
-            date = LocalDateTime.now().plusDays(1),
+            date = LocalDate.now().plusDays(1),
             begin = LocalTime.now().plusHours(2),
             end = LocalTime.now().plusHours(3),
             active = false,
@@ -233,25 +233,6 @@ class EventServiceTest {
         every { userService.findById(userId) } returns userMock
 
         assertDoesNotThrow { eventService.join(eventId, userId) }
-
-        verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { userService.findById(userId) }
-        verify(exactly = 0) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
-    }
-
-    @Test
-    fun `should throw an exception when the user does not have a device when try to join an event`() {
-        val userMock = buildUserMock().copy(device = null)
-        val userId = userMock.id!!
-
-        val eventMock = buildEventMock().copy(users = emptyList())
-        val eventId = eventMock.id!!
-
-        every { eventRepository.findById(eventId) } returns eventMock
-        every { userService.findById(userId) } returns userMock
-
-        assertThrows<ValidationException>("User must have a device") { eventService.join(eventId, userId) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }

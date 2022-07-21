@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull
 data class InvitationEntity(
     @field:Id
     val id: String? = null,
-    @field:NotNull @field:Index(name = "invitation_email_index", unique = true, columns = ["email"]) val email: String,
-    @field:NotNull val createdAt: LocalDateTime = LocalDateTime.now(),
+    @field:NotNull @field:Index(name = "invitation_email_index", unique = true, columns = ["email"])
+    val email: String,
+    @field:NotNull val createdAt: LocalDateTime = LocalDateTime.now()
 )

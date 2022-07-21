@@ -14,6 +14,8 @@ import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
 import io.micronaut.http.annotation.QueryValue
+import io.micronaut.security.annotation.Secured
+import io.micronaut.security.rules.SecurityRule
 
 @Controller("/users")
 class UserController(
@@ -21,6 +23,7 @@ class UserController(
 ) {
 
     @Post
+    @Secured(SecurityRule.IS_ANONYMOUS)
     fun create(userRequest: UserRequest): HttpResponse<Map<String, String>> {
         logger.info("Request received to create a new user $userRequest")
 
@@ -34,17 +37,20 @@ class UserController(
     }
 
     @Get
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     fun findAll(
         @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String,
+        @QueryValue(value = "size", defaultValue = "20") size: String
     ) = userService.findAll(page.toInt(), size.toInt())
 
     @Get("/email/{email}")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     fun findByEmail(
         @PathVariable("email") email: String
     ) = userService.findByEmail(email)
 
     @Put("/{id}")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     fun update(
         @PathVariable("id") id: String,
         userRequest: UserRequest
@@ -57,6 +63,7 @@ class UserController(
     }
 
     @Put("/{userId}/devices")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     fun updateDevice(
         @PathVariable("userId") userId: String,
         deviceRequest: DeviceRequest
