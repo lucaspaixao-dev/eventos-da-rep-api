@@ -90,6 +90,16 @@ class PaymentService(
         }
     }
 
+    fun processing(paymentIntentClientId: String) {
+        val paymentIntent = paymentRepository.findByPaymentIntentClientId(paymentIntentClientId)
+            ?: throw ResourceNotFoundException("payment intent not found")
+
+        if (paymentIntent.status == PaymentStatus.PENDING) {
+            val success = paymentIntent.copy(status = PaymentStatus.PROCESSING, updatedAt = LocalDateTime.now())
+            paymentRepository.updateStatus(success)
+        }
+    }
+
     fun rejectPayment(paymentIntentClientId: String) {
         val paymentIntent = paymentRepository.findByPaymentIntentClientId(paymentIntentClientId)
             ?: throw ResourceNotFoundException("payment intent not found")

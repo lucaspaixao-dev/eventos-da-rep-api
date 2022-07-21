@@ -61,7 +61,12 @@ class WebhooksController(
                 paymentService.confirmPaymentAndJoinTheEvent(paymentIntent.clientSecret)
                 logger.info("payment completed: ${paymentIntent.id}")
             }
-            "payment_intent.payment_failed" -> {
+            "payment_intent.processing" -> {
+                val paymentIntent = stripeObject as PaymentIntent
+                paymentService.processing(paymentIntent.clientSecret)
+                logger.info("payment processing: ${paymentIntent.id}")
+            }
+            "payment_intent.payment_failed", "payment_intent.canceled" -> {
                 val paymentIntent = stripeObject as PaymentIntent
                 paymentService.rejectPayment(paymentIntent.clientSecret)
                 logger.info("payment failed: ${paymentIntent.id}")
