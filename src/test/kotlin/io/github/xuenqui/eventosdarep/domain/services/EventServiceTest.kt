@@ -13,15 +13,15 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.util.UUID
 import mocks.buildEventMock
 import mocks.buildUserMock
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.util.UUID
 
 class EventServiceTest {
 
@@ -109,7 +109,7 @@ class EventServiceTest {
 
     @Test
     fun `should return all the events actives when there is an event bigger than now`() {
-        val eventMock = buildEventMock().copy(end = LocalTime.now().plusMinutes(10))
+        val eventMock = buildEventMock().copy(date = LocalDate.now().plusDays(1))
         val page = 0
         val size = 20
 
@@ -126,7 +126,7 @@ class EventServiceTest {
 
     @Test
     fun `should return all the events actives when there is an event smaller than now`() {
-        val eventMock = buildEventMock().copy(end = LocalTime.now().minusMinutes(10))
+        val eventMock = buildEventMock().copy(date = LocalDate.now().minusDays(1))
         val page = 0
         val size = 20
 
