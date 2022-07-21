@@ -1,8 +1,3 @@
-# Heres a comment
 *.psd
 *.pdf
 /test
-/spec
-/.idea
-/build/distributions
-/app/build/distributions

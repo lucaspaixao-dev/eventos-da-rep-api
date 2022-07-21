@@ -80,6 +80,15 @@ tasks.register("stage") {
     dependsOn("clean")
 
     tasks.findByName("build")?.mustRunAfter("clean")
+
+    doLast {
+        val fileTree = fileTree("$buildDir/distributions").matching {
+            include("*.tar")
+            include("*.zip")
+        }
+
+        delete(fileTree)
+    }
 }
 
 tasks.register("copyToLib", Copy::class) {
