@@ -43,7 +43,6 @@ class PaymentController(
         return paymentService.findByUser(userId)
     }
 
-
     @Put("/{paymentId}/refund")
     fun refund(
         @PathVariable("paymentId") paymentId: String
