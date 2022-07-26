@@ -27,10 +27,11 @@ class MessageService(
         val title = event.title
         val pushMessage = "${user.name}: $text"
 
-        notificationService.sendNotificationToTopic(title, pushMessage, eventId)
+        val customData = notificationService.createClickableNotification(event, NotificationDestination.CHAT)
+        notificationService.sendNotificationToTopic(title, pushMessage, eventId, customData)
         return id
     }
 
-    fun findyByEventId(eventId: String) =
+    fun findByEventId(eventId: String) =
         messageRepository.findByEventId(eventId)
 }

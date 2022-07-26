@@ -14,8 +14,9 @@ class NotificationListener(
     fun receiveNotificationEvent(event: Notification) {
         firebaseMessagingService.sendNotificationToTopic(
             title = event.title,
-            messasge = event.message,
-            topic = event.topic
+            message = event.message,
+            topic = event.topic,
+            data = event.data
         )
     }
 }

@@ -32,5 +32,5 @@ class MessageController(
     fun getMessagesByEventId(
         @QueryValue("eventId") eventId: String
     ): List<MessageResponse> =
-        messageService.findyByEventId(eventId).map { MessageResponse(it) }
+        messageService.findByEventId(eventId).map { MessageResponse(it) }
 }

@@ -83,7 +83,7 @@ class EventService(
         val newTitle = "${event.title}: $title"
         val topic = event.id!!
 
-        notificationService.sendNotificationToTopic(newTitle, message, topic)
+        notificationService.sendNotificationToTopic(newTitle, message, topic, emptyMap())
     }
 
     private fun sendNotificationNewEvent(event: Event) {
@@ -91,7 +91,7 @@ class EventService(
         val message = "A REP tem um novo evento disponível! Abra o app e veja mais informações."
         val topic = "users-topic"
 
-        notificationService.sendNotificationToTopic(title, message, topic)
+        notificationService.sendNotificationToTopic(title, message, topic, emptyMap())
     }
 
     private fun sendNotificationToUsersOnEvent(user: User, event: Event) {
@@ -99,7 +99,7 @@ class EventService(
         val message = "${user.name} confirmou presença no evento ${event.title}!"
         val topic = event.id!!
 
-        notificationService.sendNotificationToTopic(title, message, topic)
+        notificationService.sendNotificationToTopic(title, message, topic, emptyMap())
     }
 
     private fun getUserOrThrowAnException(userId: String) = userService.findById(userId)

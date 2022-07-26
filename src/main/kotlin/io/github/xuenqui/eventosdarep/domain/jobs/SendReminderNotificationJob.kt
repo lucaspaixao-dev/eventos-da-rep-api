@@ -1,5 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain.jobs
 
+import io.github.xuenqui.eventosdarep.domain.services.NotificationDestination
 import io.github.xuenqui.eventosdarep.domain.services.NotificationService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
@@ -41,7 +42,8 @@ class SendReminderNotificationJob(
                 val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO ÁS ${buildTime(it.begin)}? " +
                     "BORA SE DIVERTIR! 🤩"
 
-                notificationService.sendNotificationToTopic(title, body, it.id!!)
+                val customData = notificationService.createClickableNotification(it.id!!, NotificationDestination.EVENT_DETAILS)
+                notificationService.sendNotificationToTopic(title, body, it.id, customData)
             }
         }
 
@@ -49,7 +51,9 @@ class SendReminderNotificationJob(
             oneWeekEvents.forEach {
                 val title = "FALTA UMA SEMANA PARA ${it.title} 😍"
                 val body = "E AI, ESTÁ ANCIOSO TAMBÉM PARA O EVENTO DA REP EM ${buildDate(it.date)}? 🤩"
-                notificationService.sendNotificationToTopic(title, body, it.id!!)
+
+                val customData = notificationService.createClickableNotification(it.id!!, NotificationDestination.EVENT_DETAILS)
+                notificationService.sendNotificationToTopic(title, body, it.id, customData)
             }
         }
 
