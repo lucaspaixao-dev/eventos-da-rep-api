@@ -2,7 +2,7 @@ package io.github.xuenqui.eventosdarep.resources.repository
 
 import io.github.xuenqui.eventosdarep.domain.Currency
 import io.github.xuenqui.eventosdarep.domain.Event
-import io.github.xuenqui.eventosdarep.domain.PaymentIntent
+import io.github.xuenqui.eventosdarep.domain.Payment
 import io.github.xuenqui.eventosdarep.domain.PaymentStatus
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
@@ -19,7 +19,7 @@ open class PaymentRepository(
     private val postgresPaymentRepository: PostgresPaymentRepository
 ) {
 
-    fun create(paymentIntent: PaymentIntent, user: User, event: Event) {
+    fun create(payment: Payment, user: User, event: Event) {
         try {
             val userEntity = UserEntity(
                 id = user.id,
@@ -51,13 +51,13 @@ open class PaymentRepository(
             val id = UUID.randomUUID().toString()
             val paymentEntity = PaymentEntity(
                 id = id,
-                amount = paymentIntent.amount,
-                currency = paymentIntent.currency.name,
-                clientId = paymentIntent.gatewayPaymentId,
-                intentClientId = paymentIntent.gatewayPaymentIntentClientId,
+                amount = payment.amount,
+                currency = payment.currency.name,
+                clientId = payment.gatewayPaymentId,
+                intentClientId = payment.gatewayPaymentIntentClientId,
                 user = userEntity,
                 event = eventEntity,
-                status = paymentIntent.status.name,
+                status = payment.status.name,
                 createdAt = LocalDateTime.now(),
                 payAt = null
             )
@@ -68,10 +68,10 @@ open class PaymentRepository(
         }
     }
 
-    fun findByPaymentIntentClientId(paymentIntentClientId: String): PaymentIntent? {
+    fun findByPaymentIntentClientId(paymentIntentClientId: String): Payment? {
         try {
             return postgresPaymentRepository.findByIntentClientId(paymentIntentClientId).map {
-                PaymentIntent(
+                Payment(
                     id = it.id,
                     amount = it.amount,
                     currency = Currency.valueOf(it.currency),
@@ -91,10 +91,10 @@ open class PaymentRepository(
         }
     }
 
-    fun findByGatewayPaymentId(gatewayPaymentId: String): PaymentIntent? {
+    fun findByGatewayPaymentId(gatewayPaymentId: String): Payment? {
         try {
             return postgresPaymentRepository.findByClientId(gatewayPaymentId).map {
-                PaymentIntent(
+                Payment(
                     id = it.id,
                     amount = it.amount,
                     currency = Currency.valueOf(it.currency),
@@ -117,7 +117,7 @@ open class PaymentRepository(
     fun findById(paymentId: String) =
         try {
             postgresPaymentRepository.findById(paymentId).map {
-                val paymentIntent = PaymentIntent(
+                val payment = Payment(
                     id = it.id,
                     amount = it.amount,
                     currency = Currency.valueOf(it.currency),
@@ -131,16 +131,16 @@ open class PaymentRepository(
                     updatedAt = it.updatedAt,
                     payAt = it.payAt
                 )
-                paymentIntent
+                payment
             }.orElse(null)
         } catch (e: Exception) {
             throw RepositoryException("error finding payment", e)
         }
 
-    fun findByEventAndUser(userId: String, eventId: String): List<PaymentIntent> =
+    fun findByEventAndUser(userId: String, eventId: String): List<Payment> =
         try {
             postgresPaymentRepository.findByEventIdAndUserId(eventId, userId).map {
-                PaymentIntent(
+                Payment(
                     id = it.id,
                     amount = it.amount,
                     currency = Currency.valueOf(it.currency),
@@ -159,10 +159,10 @@ open class PaymentRepository(
             throw RepositoryException("error finding payments", e)
         }
 
-    fun findByUser(userId: String): List<PaymentIntent> =
+    fun findByUser(userId: String): List<Payment> =
         try {
             postgresPaymentRepository.findByUserId(userId).map {
-                PaymentIntent(
+                Payment(
                     id = it.id,
                     amount = it.amount,
                     currency = Currency.valueOf(it.currency),
@@ -181,12 +181,12 @@ open class PaymentRepository(
             throw RepositoryException("error finding payments", e)
         }
 
-    fun updateStatus(paymentIntent: PaymentIntent) {
+    fun updateStatus(payment: Payment) {
         try {
-            val entity = postgresPaymentRepository.findById(paymentIntent.id!!).get()
+            val entity = postgresPaymentRepository.findById(payment.id!!).get()
             val newEntity = entity.copy(
-                status = paymentIntent.status.name,
-                payAt = paymentIntent.payAt,
+                status = payment.status.name,
+                payAt = payment.payAt,
                 updatedAt = LocalDateTime.now()
             )
 

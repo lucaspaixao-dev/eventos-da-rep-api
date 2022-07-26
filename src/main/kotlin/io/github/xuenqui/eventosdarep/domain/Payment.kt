@@ -2,7 +2,7 @@ package io.github.xuenqui.eventosdarep.domain
 
 import java.time.LocalDateTime
 
-data class PaymentIntent(
+data class Payment(
     val id: String? = null,
     val gatewayPaymentId: String,
     val gatewayPaymentIntentClientId: String,
@@ -16,15 +16,3 @@ data class PaymentIntent(
     val updatedAt: LocalDateTime? = null,
     val payAt: LocalDateTime? = null
 )
-
-enum class PaymentStatus {
-    PENDING,
-    PROCESSING,
-    REFUNDED,
-    SUCCESS,
-    FAILED
-}
-
-enum class Currency {
-    BRL
-}

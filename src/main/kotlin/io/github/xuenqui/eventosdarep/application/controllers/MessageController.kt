@@ -2,6 +2,7 @@ package io.github.xuenqui.eventosdarep.application.controllers
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.MessageRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
+import io.github.xuenqui.eventosdarep.application.controllers.responses.MessageResponse
 import io.github.xuenqui.eventosdarep.domain.services.MessageService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body

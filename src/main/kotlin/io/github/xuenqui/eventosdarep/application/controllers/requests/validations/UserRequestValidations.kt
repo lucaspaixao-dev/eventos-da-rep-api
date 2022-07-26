@@ -1,16 +1,14 @@
 package io.github.xuenqui.eventosdarep.application.controllers.requests.validations
 
-import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
-import java.util.Locale
 import org.valiktor.ConstraintViolationException
 import org.valiktor.functions.hasSize
 import org.valiktor.functions.isEmail
 import org.valiktor.functions.isNotBlank
-import org.valiktor.functions.validate
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
+import java.util.*
 
 fun UserRequest.validateRequest() {
     try {
@@ -21,11 +19,6 @@ fun UserRequest.validateRequest() {
             validate(UserRequest::email).hasSize(min = 3, max = 100)
             validate(UserRequest::email).isEmail()
             validate(UserRequest::photo).isNotBlank()
-            validate(UserRequest::device).validate {
-                validate(DeviceRequest::token).isNotBlank()
-                validate(DeviceRequest::brand).isNotBlank()
-                validate(DeviceRequest::model).isNotBlank()
-            }
         }
     } catch (e: ConstraintViolationException) {
         val errors = e.constraintViolations

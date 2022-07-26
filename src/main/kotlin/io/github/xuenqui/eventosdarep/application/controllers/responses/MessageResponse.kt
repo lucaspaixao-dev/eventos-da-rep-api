@@ -1,4 +1,4 @@
-package io.github.xuenqui.eventosdarep.application.controllers
+package io.github.xuenqui.eventosdarep.application.controllers.responses
 
 import io.github.xuenqui.eventosdarep.domain.Message
 import io.github.xuenqui.eventosdarep.domain.User

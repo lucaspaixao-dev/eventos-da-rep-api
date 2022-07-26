@@ -16,7 +16,7 @@ import jakarta.inject.Singleton
 class ApplicationExceptionHandler :
     ExceptionHandler<ApiException?, HttpResponse<ExceptionResponse>> {
 
-    override fun handle(request: HttpRequest<*>?, exception: ApiException?): HttpResponse<ExceptionResponse> {
+    override fun handle(request: HttpRequest<*>, exception: ApiException?): HttpResponse<ExceptionResponse> {
         logger.error("An error occurred ${exception?.message}")
 
         val exceptionResponse = ExceptionResponse(

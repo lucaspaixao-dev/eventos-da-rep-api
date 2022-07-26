@@ -1,7 +1,7 @@
 package io.github.xuenqui.eventosdarep.application.controllers
 
 import io.github.xuenqui.eventosdarep.application.controllers.requests.CreatePaymentRequest
-import io.github.xuenqui.eventosdarep.domain.PaymentIntent
+import io.github.xuenqui.eventosdarep.domain.Payment
 import io.github.xuenqui.eventosdarep.domain.services.PaymentService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
@@ -32,14 +32,14 @@ class PaymentController(
     fun findByEventAndUser(
         @QueryValue("userId") userId: String,
         @QueryValue("eventId") eventId: String
-    ): List<PaymentIntent> {
+    ): List<Payment> {
         return paymentService.findByEventAndUser(userId, eventId)
     }
 
     @Get("/user/{userId}")
     fun findByUser(
         @PathVariable("userId") userId: String
-    ): List<PaymentIntent> {
+    ): List<Payment> {
         return paymentService.findByUser(userId)
     }
 

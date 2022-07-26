@@ -4,12 +4,11 @@ import io.github.xuenqui.eventosdarep.resources.repository.entities.InvitationEn
 import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
-import java.util.Optional
+import java.util.*
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 interface PostgresInvitationRepository : CrudRepository<InvitationEntity, String> {
 
     fun findByEmail(email: String): Optional<InvitationEntity>
-
     fun deleteByEmail(email: String)
 }

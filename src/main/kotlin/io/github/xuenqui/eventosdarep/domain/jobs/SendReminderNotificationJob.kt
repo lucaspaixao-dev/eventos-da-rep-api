@@ -21,7 +21,7 @@ class SendReminderNotificationJob(
 
         val now = LocalDate.now()
 
-        val events = eventRepository.findALlWithoutPage()
+        val events = eventRepository.findAllWithoutPage()
         val tomorrow = now.plusDays(1)
         val oneWeek = now.plusWeeks(1)
 

@@ -1,9 +1,8 @@
 package mocks
 
-import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 internal fun buildUserMock(id: String? = null) = User(
     id = id ?: UUID.randomUUID().toString(),
@@ -12,13 +11,5 @@ internal fun buildUserMock(id: String? = null) = User(
     isAdmin = false,
     photo = "test",
     createdAt = LocalDateTime.now(),
-    updatedAt = LocalDateTime.now(),
-    device = Device(
-        id = UUID.randomUUID().toString(),
-        token = "addsa",
-        brand = "Apple",
-        model = "13",
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
-    )
+    updatedAt = LocalDateTime.now()
 )

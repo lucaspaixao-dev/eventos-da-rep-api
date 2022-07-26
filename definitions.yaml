@@ -1,0 +1,180 @@
+swagger: "2.0"
+info:
+  description: "Documentação para a api Eventos da REP"
+  version: "1.0.0"
+  title: "Swagger Eventos da REP"
+  contact:
+    email: "lucasspxo@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "eventos-da-rep-api.herokuapp.com"
+tags:
+  - name: "event"
+    description: "Endpoints para eventos"
+  - name: "invitation"
+    description: "Endpoint para convites"
+  - name: "user"
+    description: "Endpoint para usuários"
+schemes:
+  - "https"
+paths:
+  /events:
+    post:
+      tags:
+        - "events"
+      summary: "Adiciona um novo evento"
+      operationId: "addEvent"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      security:
+        - Bearer: [ ]
+      parameters:
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/EventRequest"
+      responses:
+        "201":
+          description: "evento adicionado"
+          schema:
+            $ref: "#/definitions/IdResponse"
+        "400":
+          description: "campos inválidos"
+          schema:
+            $ref: "#/definitions/InvalidFields"
+        "403":
+          description: "token inválido"
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+definitions:
+  EventRequest:
+    type: "object"
+    properties:
+      title:
+        type: "string"
+      latitude:
+        type: "number"
+        example: -38.0000
+      longitude:
+        type: "number"
+        example: -38.0000
+      city:
+        type: "string"
+      address:
+        type: "string"
+      description:
+        type: "string"
+      photo:
+        type: "string"
+      date:
+        type: "string"
+        format: "date"
+      begin:
+        type: "string"
+        example: "12:00:00"
+      end:
+        type: "string"
+        example: "12:00:00"
+      active:
+        type: "boolean"
+      isPayed:
+        type: "boolean"
+      amount:
+        type: "number"
+        description: "Valor em centavos"
+        example: "200"
+
+  Event:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      title:
+        type: "string"
+      latitude:
+        type: "number"
+        example: -38.0000
+      longitude:
+        type: "number"
+        example: -38.0000
+      city:
+        type: "string"
+      address:
+        type: "string"
+      description:
+        type: "string"
+      photo:
+        type: "string"
+      date:
+        type: "string"
+        format: "date"
+      begin:
+        type: "string"
+        example: "12:00:00"
+      end:
+        type: "string"
+        example: "12:00:00"
+      active:
+        type: "boolean"
+      isPayed:
+        type: "boolean"
+      amount:
+        type: "number"
+        description: "Valor em centavos"
+        example: "200"
+      users:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      name:
+        type: "string"
+      email:
+        type: "string"
+      isAdmin:
+        type: "boolean"
+      photo:
+        type: "string"
+      createdAt:
+        type: "string"
+        format: "date-time"
+      updatedAt:
+        type: "string"
+        format: "date-time"
+
+  IdResponse:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "6178b7b8-f306-4aa9-8b04-5baef4bc1121"
+
+  InvalidFields:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      details:
+        type: "array"
+        items:
+          type: "string"

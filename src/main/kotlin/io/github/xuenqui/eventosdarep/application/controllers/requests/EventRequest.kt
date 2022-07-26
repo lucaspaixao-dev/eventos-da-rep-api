@@ -1,7 +1,7 @@
 package io.github.xuenqui.eventosdarep.application.controllers.requests
 
 import io.github.xuenqui.eventosdarep.domain.Event
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 
 data class EventRequest(
@@ -12,7 +12,7 @@ data class EventRequest(
     val address: String,
     val description: String,
     val photo: String,
-    val eventDate: LocalDateTime,
+    val date: LocalDate,
     val begin: LocalTime,
     val end: LocalTime,
     val active: Boolean = true,
@@ -28,7 +28,7 @@ fun EventRequest.toDomain() = Event(
     address = this.address,
     description = this.description,
     photo = this.photo,
-    date = this.eventDate.toLocalDate(),
+    date = this.date,
     begin = this.begin,
     end = this.end,
     active = this.active,

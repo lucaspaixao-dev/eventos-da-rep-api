@@ -301,7 +301,7 @@ class EventServiceTest {
 
     @Test
     fun `should not send notification to event when the users on event not have the device`() {
-        val userMock = buildUserMock().copy(device = null)
+        val userMock = buildUserMock()
         val userId = userMock.id!!
 
         val eventMock = buildEventMock().copy(users = listOf(userMock))

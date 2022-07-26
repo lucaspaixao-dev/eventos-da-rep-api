@@ -9,6 +9,5 @@ data class User(
     val isAdmin: Boolean,
     val photo: String,
     val createdAt: LocalDateTime? = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = null,
-    val device: Device? = null
+    val updatedAt: LocalDateTime? = null
 )

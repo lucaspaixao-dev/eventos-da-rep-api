@@ -1,11 +1,9 @@
 package io.github.xuenqui.eventosdarep.resources.repository.entities
 
 import io.github.xuenqui.eventosdarep.domain.User
-import io.micronaut.core.annotation.Nullable
 import io.micronaut.data.annotation.Id
 import io.micronaut.data.annotation.Index
 import io.micronaut.data.annotation.MappedEntity
-import io.micronaut.data.annotation.Relation
 import java.time.LocalDateTime
 import javax.validation.constraints.NotNull
 
@@ -22,30 +20,22 @@ data class UserEntity(
         columns = ["created_at"]
     )
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val updatedAt: LocalDateTime? = null,
-
-    @Nullable @field:Relation(
-        Relation.Kind.ONE_TO_ONE,
-        cascade = [Relation.Cascade.PERSIST, Relation.Cascade.UPDATE]
-    )
-    val device: DeviceEntity? = null
+    val updatedAt: LocalDateTime? = null
 ) {
 
-    constructor(id: String, user: User, device: DeviceEntity, createdAt: LocalDateTime) : this(
+    constructor(id: String, user: User, createdAt: LocalDateTime) : this(
         id = id,
         name = user.name,
         email = user.email,
         isAdmin = user.isAdmin,
         photo = user.photo,
         createdAt = createdAt,
-        updatedAt = null,
-        device = device
+        updatedAt = null
     )
 
     constructor(
         id: String,
         user: User,
-        device: DeviceEntity,
         createdAt: LocalDateTime,
         updatedAt: LocalDateTime
     ) : this(
@@ -55,7 +45,6 @@ data class UserEntity(
         isAdmin = user.isAdmin,
         photo = user.photo,
         createdAt = createdAt,
-        updatedAt = updatedAt,
-        device = device
+        updatedAt = updatedAt
     )
 }

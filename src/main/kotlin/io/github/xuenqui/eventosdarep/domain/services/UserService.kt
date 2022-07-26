@@ -1,14 +1,10 @@
 package io.github.xuenqui.eventosdarep.domain.services
 
-import io.github.xuenqui.eventosdarep.domain.Device
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.UserNotInvitedException
-import io.github.xuenqui.eventosdarep.domain.exceptions.ValidationException
 import io.github.xuenqui.eventosdarep.resources.repository.UserRepository
 import jakarta.inject.Singleton
-import java.time.LocalDateTime
-import java.util.UUID
 
 @Singleton
 class UserService(
@@ -17,8 +13,6 @@ class UserService(
 ) {
 
     fun create(user: User): String {
-        validateDevice(user)
-
         return userRepository.findByEmail(user.email)?.id ?: validateInviteAndCreateUser(user)
     }
 
@@ -32,17 +26,9 @@ class UserService(
     fun update(userId: String, user: User) {
         val foundUser = getUserOrThrowAnException(userId)
 
-        validateDevice(user)
-
         val newUser = foundUser.copy(
             name = user.name,
             email = user.email,
-            device = user.device!!.copy(
-                token = user.device.token,
-                brand = user.device.brand,
-                model = user.device.model,
-                createdAt = user.device.createdAt
-            ),
             isAdmin = user.isAdmin,
             photo = user.photo,
             createdAt = user.createdAt
@@ -51,42 +37,8 @@ class UserService(
         userRepository.update(newUser)
     }
 
-    fun updateDevice(userId: String, device: Device) {
-        val foundUser = getUserOrThrowAnException(userId)
-
-        val newDevice = if (foundUser.device != null) {
-            device.copy(
-                id = foundUser.device.id,
-                token = device.token,
-                brand = device.brand,
-                model = device.model,
-                createdAt = device.createdAt,
-                updatedAt = LocalDateTime.now()
-            )
-        } else {
-            Device(
-                id = UUID.randomUUID().toString(),
-                token = device.token,
-                brand = device.brand,
-                model = device.model,
-                createdAt = LocalDateTime.now()
-            )
-        }
-
-        val newUser = foundUser.copy(
-            device = newDevice
-        )
-        userRepository.update(newUser)
-    }
-
     private fun getUserOrThrowAnException(userId: String) =
         userRepository.findById(userId) ?: throw ResourceNotFoundException("User not found")
-
-    private fun validateDevice(user: User) {
-        if (user.device == null) {
-            throw ValidationException("Device is required")
-        }
-    }
 
     private fun validateInviteAndCreateUser(user: User): String {
         val invitation =

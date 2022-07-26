@@ -1,6 +1,5 @@
 package io.github.xuenqui.eventosdarep.application.controllers
 
-import io.github.xuenqui.eventosdarep.application.controllers.requests.DeviceRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.UserRequest
 import io.github.xuenqui.eventosdarep.application.controllers.requests.toDomain
 import io.github.xuenqui.eventosdarep.application.controllers.requests.validations.validateRequest
@@ -8,12 +7,7 @@ import io.github.xuenqui.eventosdarep.domain.services.UserService
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpResponse.created
-import io.micronaut.http.annotation.Controller
-import io.micronaut.http.annotation.Get
-import io.micronaut.http.annotation.PathVariable
-import io.micronaut.http.annotation.Post
-import io.micronaut.http.annotation.Put
-import io.micronaut.http.annotation.QueryValue
+import io.micronaut.http.annotation.*
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 
@@ -59,18 +53,6 @@ class UserController(
 
         userRequest.validateRequest()
         userService.update(id, userRequest.toDomain())
-        return HttpResponse.noContent()
-    }
-
-    @Put("/{userId}/devices")
-    @Secured(SecurityRule.IS_AUTHENTICATED)
-    fun updateDevice(
-        @PathVariable("userId") userId: String,
-        deviceRequest: DeviceRequest
-    ): HttpResponse<Nothing> {
-        logger.info("Request received to update device for user with id $userId, $deviceRequest")
-        val domain = deviceRequest.toDomain()
-        userService.updateDevice(userId, domain)
         return HttpResponse.noContent()
     }
 

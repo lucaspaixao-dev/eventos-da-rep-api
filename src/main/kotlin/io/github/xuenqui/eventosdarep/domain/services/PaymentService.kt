@@ -1,6 +1,6 @@
 package io.github.xuenqui.eventosdarep.domain.services
 
-import io.github.xuenqui.eventosdarep.domain.PaymentIntent
+import io.github.xuenqui.eventosdarep.domain.Payment
 import io.github.xuenqui.eventosdarep.domain.PaymentStatus
 import io.github.xuenqui.eventosdarep.domain.exceptions.BadRequestException
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
@@ -35,7 +35,7 @@ class PaymentService(
         val amount = event.amount ?: throw BadRequestException("The event has no amount")
         val response = stripeService.createPaymentIntent(amount)
 
-        val paymentIntent = PaymentIntent(
+        val payment = Payment(
             userId = userId,
             eventId = eventId,
             eventName = event.title,
@@ -44,8 +44,8 @@ class PaymentService(
             gatewayPaymentIntentClientId = response.clientSecret
         )
 
-        paymentRepository.create(paymentIntent, user, event)
-        return paymentIntent.gatewayPaymentIntentClientId
+        paymentRepository.create(payment, user, event)
+        return payment.gatewayPaymentIntentClientId
     }
 
     fun findByEventAndUser(eventId: String, userId: String) = paymentRepository.findByEventAndUser(eventId, userId)
@@ -110,14 +110,14 @@ class PaymentService(
         }
     }
 
-    private fun checkIsProcessing(paymentIntent: PaymentIntent) {
-        if (paymentIntent.status == PaymentStatus.PROCESSING) {
+    private fun checkIsProcessing(payment: Payment) {
+        if (payment.status == PaymentStatus.PROCESSING) {
             throw BadRequestException("There is a processing payment for this event")
         }
     }
 
-    private fun checkIsSuccess(paymentIntent: PaymentIntent) {
-        if (paymentIntent.status == PaymentStatus.SUCCESS) {
+    private fun checkIsSuccess(payment: Payment) {
+        if (payment.status == PaymentStatus.SUCCESS) {
             throw BadRequestException("The user already paid for this event")
         }
     }
