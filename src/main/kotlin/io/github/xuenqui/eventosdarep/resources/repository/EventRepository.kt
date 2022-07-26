@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.Repository
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Repository
 @SuppressWarnings("TooGenericExceptionCaught")
@@ -109,6 +109,26 @@ open class EventRepository(
             postgresEventRepository.exitEvent(eventId, userId)
         } catch (e: Exception) {
             throw RepositoryException("error exiting event", e)
+        }
+    }
+
+    fun deleteUsersOnEvent(eventId: String) {
+        try {
+            logger.info("removing users on event $eventId")
+
+            postgresEventRepository.deleteEventOnEventUser(eventId)
+        } catch (e: Exception) {
+            throw RepositoryException("error: ", e)
+        }
+    }
+
+    fun delete(eventId: String) {
+        try {
+            logger.info("deleting event $eventId")
+
+            postgresEventRepository.deleteById(eventId)
+        } catch (e: Exception) {
+            throw RepositoryException("error: ", e)
         }
     }
 

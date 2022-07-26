@@ -37,8 +37,8 @@ class SendReminderNotificationJob(
 
         if (tomorrowEvents.isNotEmpty()) {
             tomorrowEvents.forEach {
-                val title = "FALTA UM DIA PARA O EVENTO ${it.title} 🥳"
-                val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO AMANHÃ ÁS ${buildTime(it.begin)}? " +
+                val title = "FALTA UM DIA PARA ${it.title} 🥳"
+                val body = "AMANHÃ TEM EVENTO DA REP! ESTÁ PREPARADO PARA O EVENTO ÁS ${buildTime(it.begin)}? " +
                     "BORA SE DIVERTIR! 🤩"
 
                 notificationService.sendNotificationToTopic(title, body, it.id!!)
@@ -47,7 +47,7 @@ class SendReminderNotificationJob(
 
         if (oneWeekEvents.isNotEmpty()) {
             oneWeekEvents.forEach {
-                val title = "FALTA UMA SEMANA PARA O EVENTO ${it.title} 😍"
+                val title = "FALTA UMA SEMANA PARA ${it.title} 😍"
                 val body = "E AI, ESTÁ ANCIOSO TAMBÉM PARA O EVENTO DA REP EM ${buildDate(it.date)}? 🤩"
                 notificationService.sendNotificationToTopic(title, body, it.id!!)
             }

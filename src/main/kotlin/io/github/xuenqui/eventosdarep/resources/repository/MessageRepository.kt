@@ -73,6 +73,14 @@ open class MessageRepository(
         } catch (e: Exception) {
             throw RepositoryException("error finding messages by event id", e)
         }
+
+    fun deleteByEvent(eventId: String) {
+        try {
+            postgresMessageRepository.deleteByEvent(eventId)
+        } catch (e: Exception) {
+            throw RepositoryException("error to delete messages by eventId $eventId", e)
+        }
+    }
 }
 
 fun MessageEntity.toDomain(eventId: String) = Message(
