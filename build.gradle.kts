@@ -52,7 +52,7 @@ dependencies {
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.12.5")
 }
 
 application {
