@@ -31,20 +31,23 @@ class UserController(
     }
 
     @Get
-    @Secured(SecurityRule.IS_AUTHENTICATED)
+//    @Secured(SecurityRule.IS_AUTHENTICATED)
+    @Secured(SecurityRule.IS_ANONYMOUS)
     fun findAll(
         @QueryValue(value = "page", defaultValue = "0") page: String,
         @QueryValue(value = "size", defaultValue = "20") size: String
     ) = userService.findAll(page.toInt(), size.toInt())
 
     @Get("/email/{email}")
-    @Secured(SecurityRule.IS_AUTHENTICATED)
+//    @Secured(SecurityRule.IS_AUTHENTICATED)
+    @Secured(SecurityRule.IS_ANONYMOUS)
     fun findByEmail(
         @PathVariable("email") email: String
     ) = userService.findByEmail(email)
 
     @Put("/{id}")
-    @Secured(SecurityRule.IS_AUTHENTICATED)
+//    @Secured(SecurityRule.IS_AUTHENTICATED)
+    @Secured(SecurityRule.IS_ANONYMOUS)
     fun update(
         @PathVariable("id") id: String,
         userRequest: UserRequest

@@ -18,7 +18,8 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 
 @Controller("/invitations")
-@Secured(SecurityRule.IS_AUTHENTICATED)
+//@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_ANONYMOUS)
 class InvitationController(
     private val invitationService: InvitationService
 ) {

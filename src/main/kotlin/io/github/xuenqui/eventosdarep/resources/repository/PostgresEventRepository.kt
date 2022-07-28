@@ -7,17 +7,21 @@ import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.Page
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.query.builder.sql.Dialect
+import io.micronaut.data.repository.CrudRepository
 import io.micronaut.data.repository.PageableRepository
 import java.util.Optional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
-interface PostgresEventRepository : PageableRepository<EventEntity, String> {
+interface PostgresEventRepository : CrudRepository<EventEntity, String> {
+
+//    @Join(value = "users", type = Join.Type.LEFT_FETCH)
+//    override fun findAll(pageable: Pageable): Page<EventEntity>
 
     @Join(value = "users", type = Join.Type.LEFT_FETCH)
-    override fun findAll(pageable: Pageable): Page<EventEntity>
+    override fun findAll(): List<EventEntity>
 
-    @Join(value = "users", type = Join.Type.LEFT_FETCH)
-    fun findByActive(active: Boolean, pageable: Pageable): List<EventEntity>
+//    @Join(value = "users", type = Join.Type.LEFT_FETCH)
+//    fun findByActive(active: Boolean, pageable: Pageable): List<EventEntity>
 
     @Join(value = "users", type = Join.Type.LEFT_FETCH)
     override fun findById(id: String): Optional<EventEntity>

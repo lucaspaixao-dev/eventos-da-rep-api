@@ -2,11 +2,11 @@ micronaut:
   application:
     name: eventos-da-rep-api
   security:
-    enabled: true
-    intercept-url-map:
-      - pattern: /**
-        access:
-          - isAuthenticated()
+    enabled: false
+#    intercept-url-map:
+#      - pattern: /**
+#        access:
+#          - isAuthenticated()
     token:
       jwt:
         enabled: true
