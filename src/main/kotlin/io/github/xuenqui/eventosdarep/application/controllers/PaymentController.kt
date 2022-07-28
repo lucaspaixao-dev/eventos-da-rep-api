@@ -15,7 +15,8 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 
 @Controller("/payments")
-@Secured(SecurityRule.IS_AUTHENTICATED)
+//@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_ANONYMOUS)
 class PaymentController(
     private val paymentService: PaymentService
 ) {
