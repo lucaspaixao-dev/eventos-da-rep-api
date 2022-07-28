@@ -12,7 +12,7 @@ import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Repository
 @SuppressWarnings("TooGenericExceptionCaught")
@@ -79,6 +79,14 @@ open class MessageRepository(
             postgresMessageRepository.deleteByEvent(eventId)
         } catch (e: Exception) {
             throw RepositoryException("error to delete messages by eventId $eventId", e)
+        }
+    }
+
+    fun deleteByUser(userId: String) {
+        try {
+            postgresMessageRepository.deleteByUser(userId)
+        } catch (e: Exception) {
+            throw RepositoryException("error to delete messages by userId $userId", e)
         }
     }
 }

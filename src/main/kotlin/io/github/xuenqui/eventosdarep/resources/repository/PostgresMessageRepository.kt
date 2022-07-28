@@ -16,4 +16,7 @@ interface PostgresMessageRepository : PageableRepository<MessageEntity, String> 
 
     @Query("DELETE FROM messages WHERE event_id = :eventId")
     fun deleteByEvent(eventId: String)
+
+    @Query("DELETE FROM messages WHERE user_id = :userId")
+    fun deleteByUser(userId: String)
 }

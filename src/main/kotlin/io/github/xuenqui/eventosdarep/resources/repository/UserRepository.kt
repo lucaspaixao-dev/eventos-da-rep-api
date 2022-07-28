@@ -77,6 +77,15 @@ open class UserRepository(
             throw RepositoryException("error updating user", e)
         }
 
+    fun delete(userId: String) {
+        try {
+            logger.info("deleting user $userId")
+            postgresUserRepository.deleteById(userId)
+        } catch (e: Exception) {
+            throw RepositoryException("error delete user", e)
+        }
+    }
+
     companion object : LoggableClass()
 }
 

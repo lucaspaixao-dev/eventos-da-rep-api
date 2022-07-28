@@ -56,5 +56,16 @@ class UserController(
         return HttpResponse.noContent()
     }
 
+    @Delete("/{id}")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    fun delete(
+        @PathVariable("id") id: String
+    ): HttpResponse<Nothing> {
+        logger.info("Request received to delete user with id $id")
+
+        userService.deleteUser(id)
+        return HttpResponse.noContent()
+    }
+
     companion object : LoggableClass()
 }

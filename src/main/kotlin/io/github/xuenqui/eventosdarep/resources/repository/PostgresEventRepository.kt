@@ -32,4 +32,7 @@ interface PostgresEventRepository : PageableRepository<EventEntity, String> {
 
     @Query("DELETE FROM event_entity_user_entity WHERE event_entity_id = :eventId")
     fun deleteEventOnEventUser(eventId: String)
+
+    @Query("DELETE FROM event_entity_user_entity WHERE user_entity_id = :userId")
+    fun deleteUserOnEventUser(userId: String)
 }

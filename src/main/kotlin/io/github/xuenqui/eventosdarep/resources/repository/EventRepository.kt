@@ -132,6 +132,15 @@ open class EventRepository(
         }
     }
 
+    fun deleteUserOnEvent(userId: String) {
+        try {
+            logger.info("deleting user $userId on events")
+            postgresEventRepository.deleteUserOnEventUser(userId);
+        } catch (e: Exception) {
+            throw RepositoryException("error: ", e)
+        }
+    }
+
     companion object : LoggableClass()
 }
 

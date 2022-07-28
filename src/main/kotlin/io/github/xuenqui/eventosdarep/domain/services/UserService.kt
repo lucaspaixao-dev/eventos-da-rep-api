@@ -3,13 +3,17 @@ package io.github.xuenqui.eventosdarep.domain.services
 import io.github.xuenqui.eventosdarep.domain.User
 import io.github.xuenqui.eventosdarep.domain.exceptions.ResourceNotFoundException
 import io.github.xuenqui.eventosdarep.domain.exceptions.UserNotInvitedException
+import io.github.xuenqui.eventosdarep.resources.repository.EventRepository
+import io.github.xuenqui.eventosdarep.resources.repository.MessageRepository
 import io.github.xuenqui.eventosdarep.resources.repository.UserRepository
 import jakarta.inject.Singleton
 
 @Singleton
 class UserService(
     private val userRepository: UserRepository,
-    private val invitationService: InvitationService
+    private val invitationService: InvitationService,
+    private val messageRepository: MessageRepository,
+    private val eventRepository: EventRepository
 ) {
 
     fun create(user: User): String {
@@ -35,6 +39,15 @@ class UserService(
         )
 
         userRepository.update(newUser)
+    }
+
+    fun deleteUser(userId: String) {
+        val user = findById(userId)
+
+        messageRepository.deleteByUser(user.id!!)
+        eventRepository.deleteUserOnEvent(user.id)
+        invitationService.delete(user.email)
+        userRepository.delete(user.id)
     }
 
     private fun getUserOrThrowAnException(userId: String) =
