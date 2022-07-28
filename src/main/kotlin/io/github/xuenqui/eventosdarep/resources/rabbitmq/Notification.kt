@@ -4,5 +4,5 @@ data class Notification(
     val topic: String,
     val title: String,
     val message: String,
-    val data: Map<String, String> = emptyMap()
+    val data: Map<String, String>
 )
