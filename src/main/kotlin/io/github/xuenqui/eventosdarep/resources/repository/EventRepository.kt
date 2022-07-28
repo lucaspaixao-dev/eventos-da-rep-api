@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.Repository
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Repository
 @SuppressWarnings("TooGenericExceptionCaught")
@@ -23,7 +23,7 @@ open class EventRepository(
 
             logger.info("finding all events")
 
-            postgresEventRepository.findAll(pageable).map { it.toDomain() }.toList()
+            postgresEventRepository.findAll().map { it.toDomain() }.toList()
         } catch (e: Exception) {
             throw RepositoryException("error finding all events", e)
         }
@@ -53,7 +53,7 @@ open class EventRepository(
 
             logger.info("finding all active events")
 
-            postgresEventRepository.findByActive(isActive, pageable).map { it.toDomain() }.toList()
+            postgresEventRepository.findAll().map { it.toDomain() }.toList()
         } catch (e: Exception) {
             throw RepositoryException("error finding all active events", e)
         }
