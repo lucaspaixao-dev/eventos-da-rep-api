@@ -23,7 +23,9 @@ open class EventRepository(
 
             logger.info("finding all events")
 
-            postgresEventRepository.findAll().map { it.toDomain() }.toList()
+            postgresEventRepository.findAll().map { it.toDomain() }
+                .sortedBy { it.date }
+                .toList()
         } catch (e: Exception) {
             throw RepositoryException("error finding all events", e)
         }
@@ -53,7 +55,9 @@ open class EventRepository(
 
             logger.info("finding all active events")
 
-            postgresEventRepository.findAll().map { it.toDomain() }.toList()
+            postgresEventRepository.findAll().map { it.toDomain() }
+                .sortedBy { it.date }
+                .toList()
         } catch (e: Exception) {
             throw RepositoryException("error finding all active events", e)
         }
