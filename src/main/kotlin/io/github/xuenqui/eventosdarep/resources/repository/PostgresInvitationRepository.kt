@@ -4,7 +4,7 @@ import io.github.xuenqui.eventosdarep.resources.repository.entities.InvitationEn
 import io.micronaut.data.jdbc.annotation.JdbcRepository
 import io.micronaut.data.model.query.builder.sql.Dialect
 import io.micronaut.data.repository.CrudRepository
-import java.util.*
+import java.util.Optional
 
 @JdbcRepository(dialect = Dialect.POSTGRES)
 interface PostgresInvitationRepository : CrudRepository<InvitationEntity, String> {

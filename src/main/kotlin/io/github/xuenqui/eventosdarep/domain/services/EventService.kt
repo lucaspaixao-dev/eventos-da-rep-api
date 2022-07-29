@@ -28,10 +28,10 @@ class EventService(
 
     fun findById(id: String): Event = getEventOrThrowAnException(id)
 
-    fun findAll(page: Int, size: Int): List<Event> = eventRepository.findAll(page, size)
+    fun findAll(): List<Event> = eventRepository.findAll()
 
-    fun findActiveEvents(page: Int, size: Int): List<Event> =
-        eventRepository.findByActive(true, page, size)
+    fun findActiveEvents(): List<Event> =
+        eventRepository.findByActive()
             .filter {
                 val eventTime = it.date
 
@@ -83,7 +83,8 @@ class EventService(
         val newTitle = "${event.title}: $title"
         val topic = event.id!!
 
-        val notification = notificationService.createClickableNotification(eventId, NotificationDestination.EVENT_DETAILS)
+        val notification =
+            notificationService.createClickableNotification(eventId, NotificationDestination.EVENT_DETAILS)
         notificationService.sendNotificationToTopic(newTitle, message, topic, notification)
     }
 
@@ -100,7 +101,8 @@ class EventService(
         val message = "${user.name} confirmou presença no evento ${event.title}!"
         val topic = event.id!!
 
-        val notification = notificationService.createClickableNotification(event.id, NotificationDestination.EVENT_DETAILS)
+        val notification =
+            notificationService.createClickableNotification(event.id, NotificationDestination.EVENT_DETAILS)
         notificationService.sendNotificationToTopic(title, message, topic, notification)
     }
 

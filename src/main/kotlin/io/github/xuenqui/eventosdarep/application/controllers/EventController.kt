@@ -14,12 +14,10 @@ import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.PathVariable
 import io.micronaut.http.annotation.Post
 import io.micronaut.http.annotation.Put
-import io.micronaut.http.annotation.QueryValue
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
 
-//@Secured(SecurityRule.IS_AUTHENTICATED)
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("/events")
 class EventController(
     private val eventService: EventService
@@ -41,16 +39,10 @@ class EventController(
     }
 
     @Get
-    fun getAll(
-        @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String
-    ): List<Event> = eventService.findAll(page.toInt(), size.toInt())
+    fun getAll(): List<Event> = eventService.findAll()
 
     @Get("/actives")
-    fun getActiveEvents(
-        @QueryValue(value = "page", defaultValue = "0") page: String,
-        @QueryValue(value = "size", defaultValue = "20") size: String
-    ): List<Event> = eventService.findActiveEvents(page.toInt(), size.toInt())
+    fun getActiveEvents(): List<Event> = eventService.findActiveEvents()
 
     @Get("/{id}")
     fun getById(@PathVariable("id") id: String): Event = eventService.findById(id)

@@ -8,7 +8,7 @@ import org.valiktor.functions.isEmail
 import org.valiktor.functions.isNotBlank
 import org.valiktor.i18n.mapToMessage
 import org.valiktor.validate
-import java.util.*
+import java.util.Locale
 
 fun UserRequest.validateRequest() {
     try {

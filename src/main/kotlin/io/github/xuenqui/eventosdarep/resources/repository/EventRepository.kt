@@ -5,22 +5,17 @@ import io.github.xuenqui.eventosdarep.domain.exceptions.RepositoryException
 import io.github.xuenqui.eventosdarep.logging.LoggableClass
 import io.github.xuenqui.eventosdarep.resources.repository.entities.EventEntity
 import io.micronaut.data.annotation.Repository
-import io.micronaut.data.model.Pageable
-import io.micronaut.data.model.Sort
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Repository
-@SuppressWarnings("TooGenericExceptionCaught")
+@SuppressWarnings("TooGenericExceptionCaught", "TooManyFunctions")
 open class EventRepository(
     private val postgresEventRepository: PostgresEventRepository
 ) {
 
-    fun findAll(page: Int, size: Int): List<Event> =
+    fun findAll(): List<Event> =
         try {
-            val sort = Sort.UNSORTED.order(Sort.Order.asc("date"))
-            val pageable = Pageable.from(page, size, sort)
-
             logger.info("finding all events")
 
             postgresEventRepository.findAll().map { it.toDomain() }
@@ -48,11 +43,8 @@ open class EventRepository(
             throw RepositoryException("error finding event by title: $title", e)
         }
 
-    fun findByActive(isActive: Boolean, page: Int, size: Int): List<Event> =
+    fun findByActive(): List<Event> =
         try {
-            val sort = Sort.UNSORTED.order(Sort.Order.asc("date"))
-            val pageable = Pageable.from(page, size, sort)
-
             logger.info("finding all active events")
 
             postgresEventRepository.findAll().map { it.toDomain() }
@@ -139,7 +131,7 @@ open class EventRepository(
     fun deleteUserOnEvent(userId: String) {
         try {
             logger.info("deleting user $userId on events")
-            postgresEventRepository.deleteUserOnEventUser(userId);
+            postgresEventRepository.deleteUserOnEventUser(userId)
         } catch (e: Exception) {
             throw RepositoryException("error: ", e)
         }

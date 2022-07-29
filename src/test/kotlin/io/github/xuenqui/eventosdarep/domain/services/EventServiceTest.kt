@@ -44,13 +44,13 @@ class EventServiceTest {
 
         every { eventRepository.findByTitle(eventMock.title) } returns null
         every { eventRepository.create(eventMock) } returns eventMock.id!!
-        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) } just Runs
+        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!, any()) } just Runs
 
         assertDoesNotThrow { eventService.create(eventMock) }
 
         verify(exactly = 1) { eventRepository.findByTitle(eventMock.title) }
         verify(exactly = 1) { eventRepository.create(eventMock) }
-        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, "users-topic") }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, "users-topic", any()) }
     }
 
     @Test
@@ -65,7 +65,7 @@ class EventServiceTest {
 
         verify(exactly = 1) { eventRepository.findByTitle(eventMock.title) }
         verify(exactly = 0) { eventRepository.create(eventMock) }
-        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
+        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any(), any()) }
     }
 
     @Test
@@ -95,49 +95,43 @@ class EventServiceTest {
     @Test
     fun `should return all the events with a pagination`() {
         val eventMock = buildEventMock()
-        val page = 0
-        val size = 20
 
-        every { eventRepository.findAll(page, size) } returns listOf(eventMock)
+        every { eventRepository.findAll() } returns listOf(eventMock)
 
-        val result = assertDoesNotThrow { eventService.findAll(page, size) }
+        val result = assertDoesNotThrow { eventService.findAll() }
 
         assertThat(result).isNotNull()
         assertThat(result).isNotEmpty()
-        verify(exactly = 1) { eventRepository.findAll(page, size) }
+        verify(exactly = 1) { eventRepository.findAll() }
     }
 
     @Test
     fun `should return all the events actives when there is an event bigger than now`() {
         val eventMock = buildEventMock().copy(date = LocalDate.now().plusDays(1))
-        val page = 0
-        val size = 20
 
-        every { eventRepository.findByActive(true, page, size) } returns listOf(eventMock)
+        every { eventRepository.findByActive() } returns listOf(eventMock)
 
-        val result = assertDoesNotThrow { eventService.findActiveEvents(page, size) }
+        val result = assertDoesNotThrow { eventService.findActiveEvents() }
 
         assertThat(result).isNotNull()
         assertThat(result).isNotEmpty()
         assertThat(result.first().id!!).isEqualTo(eventMock.id!!)
 
-        verify(exactly = 1) { eventRepository.findByActive(true, page, size) }
+        verify(exactly = 1) { eventRepository.findByActive() }
     }
 
     @Test
     fun `should return all the events actives when there is an event smaller than now`() {
         val eventMock = buildEventMock().copy(date = LocalDate.now().minusDays(1))
-        val page = 0
-        val size = 20
 
-        every { eventRepository.findByActive(true, page, size) } returns listOf(eventMock)
+        every { eventRepository.findByActive() } returns listOf(eventMock)
 
-        val result = assertDoesNotThrow { eventService.findActiveEvents(page, size) }
+        val result = assertDoesNotThrow { eventService.findActiveEvents() }
 
         assertThat(result).isNotNull()
         assertThat(result).isEmpty()
 
-        verify(exactly = 1) { eventRepository.findByActive(true, page, size) }
+        verify(exactly = 1) { eventRepository.findByActive() }
     }
 
     @Test
@@ -211,14 +205,14 @@ class EventServiceTest {
         every { userService.findById(userId) } returns userMock
         every { userService.findById(existsUser.id!!) } returns existsUser
         every { eventRepository.joinEvent(eventId, userId) } just Runs
-        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) } just Runs
+        every { notificationService.sendNotificationToTopic(title, message, eventMock.id!!, any()) } just Runs
 
         assertDoesNotThrow { eventService.join(eventId, userId) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }
         verify(exactly = 1) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, eventMock.id!!) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(title, message, eventMock.id!!, any()) }
     }
 
     @Test
@@ -237,7 +231,7 @@ class EventServiceTest {
         verify(exactly = 1) { eventRepository.findById(eventId) }
         verify(exactly = 1) { userService.findById(userId) }
         verify(exactly = 0) { eventRepository.joinEvent(eventId, userId) }
-        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any()) }
+        verify(exactly = 0) { notificationService.sendNotificationToTopic(any(), any(), any(), any()) }
     }
 
     @Test
@@ -291,12 +285,12 @@ class EventServiceTest {
 
         every { eventRepository.findById(eventId) } returns eventMock
         every { userService.findById(userId) } returns userMock
-        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) } just Runs
+        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!, any()) } just Runs
 
         assertDoesNotThrow { eventService.sendNotification(eventId, title, message) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!, any()) }
     }
 
     @Test
@@ -313,11 +307,11 @@ class EventServiceTest {
 
         every { eventRepository.findById(eventId) } returns eventMock
         every { userService.findById(userId) } returns userMock
-        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) } just Runs
+        every { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!, any()) } just Runs
 
         assertDoesNotThrow { eventService.sendNotification(eventId, title, message) }
 
         verify(exactly = 1) { eventRepository.findById(eventId) }
-        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!) }
+        verify(exactly = 1) { notificationService.sendNotificationToTopic(newTitle, message, eventMock.id!!, any()) }
     }
 }

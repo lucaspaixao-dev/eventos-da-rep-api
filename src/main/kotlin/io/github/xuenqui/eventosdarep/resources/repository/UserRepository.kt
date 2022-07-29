@@ -8,7 +8,7 @@ import io.micronaut.data.annotation.Repository
 import io.micronaut.data.model.Pageable
 import io.micronaut.data.model.Sort
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 @Repository
 @SuppressWarnings("TooGenericExceptionCaught")

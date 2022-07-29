@@ -5,6 +5,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("io.micronaut.application") version "3.5.1"
     id("io.micronaut.library") version "3.5.1"
+
+    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
 }
 
 version = "0.1"
@@ -99,11 +102,23 @@ tasks.register("copyToLib", Copy::class) {
 tasks.findByName("stage")?.dependsOn("copyToLib")
 
 graalvmNative.toolchainDetection.set(false)
+
 micronaut {
     runtime("netty")
     testRuntime("junit5")
     processing {
         incremental(true)
         annotations("io.github.xuenqui.*")
+    }
+}
+
+detekt {
+    config = files("detekt-config.yml")
+}
+
+ktlint {
+    verbose.set(true)
+    filter {
+        exclude { element -> element.file.path.contains("generated/") }
     }
 }

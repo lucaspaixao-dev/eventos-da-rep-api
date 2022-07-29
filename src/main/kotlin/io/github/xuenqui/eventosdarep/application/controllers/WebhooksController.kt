@@ -27,6 +27,7 @@ class WebhooksController(
 ) {
 
     @Post("/stripe/webhook")
+    @SuppressWarnings("ThrowsCount")
     fun stripeWebhook(
         @Header("Stripe-Signature") signature: String,
         @Body payload: String
