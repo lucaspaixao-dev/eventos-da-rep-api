@@ -46,7 +46,7 @@ dependencies {
 
     implementation("org.valiktor:valiktor-core:0.12.0")
 
-    implementation("com.stripe:stripe-java:20.135.0")
+    implementation("com.stripe:stripe-java:21.0.0")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 
@@ -55,7 +55,7 @@ dependencies {
 
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.25")
-    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("io.mockk:mockk:1.12.5")
 }
 
 application {
