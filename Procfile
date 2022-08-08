@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -Dserver.port=$PORT -Dmicronaut.environments=prod -jar build/libs/*-all.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -Dmicronaut.environments=hml -jar build/libs/*-all.jar
