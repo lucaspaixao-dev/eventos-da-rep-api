@@ -6,7 +6,7 @@ plugins {
     id("io.micronaut.application") version "3.5.1"
     id("io.micronaut.library") version "3.5.1"
 
-    id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("io.gitlab.arturbosch.detekt") version "1.21.0"
 }
 
