@@ -48,7 +48,7 @@ dependencies {
 
     implementation("com.stripe:stripe-java:21.0.0")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
 
     runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("ch.qos.logback:logback-classic")
