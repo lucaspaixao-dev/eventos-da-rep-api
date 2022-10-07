@@ -46,7 +46,7 @@ dependencies {
 
     implementation("org.valiktor:valiktor-core:0.12.0")
 
-    implementation("com.stripe:stripe-java:21.0.0")
+    implementation("com.stripe:stripe-java:21.11.0")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 
